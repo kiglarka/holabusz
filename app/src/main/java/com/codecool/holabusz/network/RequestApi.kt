@@ -8,8 +8,7 @@ import retrofit2.http.Query
 
 interface RequestApi {
 
-    @GET(
-        "arrivals-and-departures-for-location.json?" +
+    @GET("arrivals-and-departures-for-location.json?" +
                 "key=key" +
                 "&version=version" +
                 "&appVersion=appVersion" +
@@ -29,39 +28,35 @@ interface RequestApi {
     )
     fun getArrivalsAndDeparturesForLocation(
         @Query("key") key: String,
-        @Query("lon") lon: Float,
-        @Query("lat") lat: Float,
-        @Query("clientLon") clientLon: Float,
-        @Query("clientLat") clientLat: Float,
+        @Query("lon") lon: Double,
+        @Query("lat") lat: Double,
+        @Query("clientLon") clientLon: Double,
+        @Query("clientLat") clientLat: Double,
     ): Flowable<Model>
 
-    @GET(
-        "stops-for-location.json?" +
-                "key=key&version=version" +
-                "&appVersion=appVersion" +
-                "&includeReferences=includeReferences" +
-                "&lon=lon&lat=lat" +
-                "&lonSpan=lonSpan" +
-                "&latSpan=latSpan" +
-                "&radius=radius" +
-                "&query=query"
+    @GET("stops-for-location.json?" +
+            "&version=" +
+            "&appVersion=" +
+            "&includeReferences=" +
+            "&lonSpan=&latSpan=" +
+            "&query="
     )
     fun getStopsForLocation(
         @Query("key") key: String,
-        @Query("lon") lon: Float,
-        @Query("lat") lat: Float,
+        @Query("lon") lon: Double,
+        @Query("lat") lat: Double,
+        @Query("radius") radius : Int
     ): Flowable<Model>
 
     @GET("stops-for-location.json?")
     fun getStopsForLocation2(
         @Query("key") key: String,
-        @Query("lon") lon: Float,
-        @Query("lat") lat: Float,
+        @Query("lon") lon: Double,
+        @Query("lat") lat: Double,
     ): Flowable<Model>
 
 
-    @GET(
-        "https://futar.bkk.hu/api/query/v1/ws/otp/api/where/schedule-for-stop.json?" +
+    @GET("schedule-for-stop.json?" +
                 "key=key&version=version&appVersion=appVersion" +
                 "&includeReferences=includeReferences" +
                 "&stopId=stopId&onlyDepartures=onlyDepartures" +
@@ -72,7 +67,9 @@ interface RequestApi {
         @Query("stopID") stopId: String,
     ): Flowable<Model>
 
-    @GET("https://futar.bkk.hu/api/query/v1/ws/otp/api/where/trip-details.json?key=key&version=version&appVersion=appVersion&includeReferences=includeReferences&tripId=tripId" +
+    @GET("trip-details.json?" +
+            "key=key&version=version&appVersion=appVersion&includeReferences=includeReferences" +
+            "&tripId=tripId" +
             "&vehicleId=vehicleId&date=date")
     fun getTripDetails(
         @Query("key") key: String,

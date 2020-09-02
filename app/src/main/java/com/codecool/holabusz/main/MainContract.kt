@@ -10,16 +10,13 @@ interface MainContract {
         fun showLoading()
         fun hideLoading()
         fun checkPermission()
+        val presenter: com.codecool.holabusz.main.MainPresenter
     }
 
     interface MainPresenter {
 
         fun onAttach(view: MainView)
         fun onDetach()
-        fun initializeFusedLocationCLinet(activity: MainActivity)
-
-        fun getLat(): Double
-        fun getLon(): Double
 
     }
 

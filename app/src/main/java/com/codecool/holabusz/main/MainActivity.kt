@@ -16,13 +16,16 @@ import com.codecool.holabusz.model.Model
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
+import org.koin.core.context.KoinContextHandler.get
+import org.koin.core.parameter.parametersOf
 import java.lang.ref.WeakReference
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    private lateinit var presenter: MainPresenter
+    override val presenter: MainPresenter by inject { parametersOf(this)}
     private lateinit var adapter: MainAdapter
     var heresTheBus : List<Model> = mutableListOf()
     private val weakContext : WeakReference<Context> = WeakReference(this)
@@ -34,20 +37,16 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         initRecyclerView()
 
-        presenter = MainPresenter()
         presenter.onAttach(this)
-
-
-        //adapter.submitList(presenter.getData())
 
     }
 
     override fun onResume() {
         super.onResume()
         checkPermission()
+        // adapter.submitList(presenter.getData())
 
     }
 
@@ -111,28 +110,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             }
         }
     }
-
-    private fun checkPermission2() {
-        if (ActivityCompat.checkSelfPermission(
-                this@MainActivity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this@MainActivity,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-    }
-
-
 
     private fun initRecyclerView(){
         recyclerView.apply {
