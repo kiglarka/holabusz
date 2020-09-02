@@ -34,14 +34,12 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         initRecyclerView()
 
         presenter = MainPresenter()
         presenter.onAttach(this)
-        //presenter.checkPermission(weakContext)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this@MainActivity)
-        checkPermission()
 
         //adapter.submitList(presenter.getData())
 
@@ -49,11 +47,35 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun onResume() {
         super.onResume()
+        checkPermission()
 
     }
 
 
     override fun checkPermission() {
+        if (ContextCompat.checkSelfPermission(this@MainActivity,
+            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(this@MainActivity)
+            fusedLocationClient.lastLocation
+
+                .addOnSuccessListener { location ->
+                    if (location != null) {
+                        lat = location.latitude
+                        lon = location.longitude
+                        Log.d(TAG, "onRequestPermissionsResult: $lat")
+                        Log.d(TAG, "onRequestPermissionsResult: $lon")
+                    } else {
+                        Log.d(
+                            TAG,
+                            "onRequestPermissionsResult: nincs location!!! $location"
+                        )
+                    }
+                }
+        }
+
+
         if (ContextCompat.checkSelfPermission(this@MainActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION) !=
             PackageManager.PERMISSION_GRANTED) {
@@ -72,22 +94,15 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         when (requestCode) {
             1 -> {
                 if (grantResults.isNotEmpty() && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED) {
-                    if ((ContextCompat.checkSelfPermission(this@MainActivity,
-                            Manifest.permission.ACCESS_FINE_LOCATION) ==
-                                PackageManager.PERMISSION_GRANTED)) {
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    if ((ContextCompat.checkSelfPermission(
+                            this@MainActivity,
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) ==
+                                PackageManager.PERMISSION_GRANTED)
+                    ) {
                         Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
-
-                        fusedLocationClient.lastLocation
-                            .addOnSuccessListener { location ->
-                                if (location != null) {
-                                    lat = location.altitude
-                                    lon = location.longitude
-                                    Log.d(TAG, "onRequestPermissionsResult: $lat")
-                                    Log.d(TAG, "onRequestPermissionsResult: $lon")
-                                }
-                            }
-
                     }
                 } else {
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()

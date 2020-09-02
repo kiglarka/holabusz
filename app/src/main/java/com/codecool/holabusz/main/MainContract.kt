@@ -20,13 +20,7 @@ interface MainContract {
 
         fun getLat(): Double
         fun getLon(): Double
-        fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
-        )
 
-        fun checkPermission(weakContext: WeakReference<Context>)
     }
 
 }

@@ -33,61 +33,6 @@ class MainPresenter() : MainContract.MainPresenter {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
     }
 
-    override fun checkPermission(weakContext: WeakReference<Context>) {
-        conti = weakContext
-        if (ContextCompat.checkSelfPermission(
-                conti.get()!!,
-                Manifest.permission.ACCESS_FINE_LOCATION) !=
-            PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(mainActivity,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ActivityCompat.requestPermissions(mainActivity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
-            } else {
-                ActivityCompat.requestPermissions(mainActivity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
-            }
-        }
-    }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-                                            grantResults: IntArray) {
-        when (requestCode) {
-            1 -> {
-                if (grantResults.isNotEmpty() && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED
-                ) {
-                    if ((ContextCompat.checkSelfPermission(
-                            conti.get()!!,
-                            Manifest.permission.ACCESS_FINE_LOCATION
-                        ) ==
-                                PackageManager.PERMISSION_GRANTED)
-                    ) {
-                        Toast.makeText(
-                            conti.get()!!,
-                            "Permission Granted",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        fusedLocationClient.lastLocation
-                            .addOnSuccessListener { location ->
-                                if (location != null) {
-                                    lat = location.altitude
-                                    lon = location.longitude
-                                    Log.d(TAG, "onRequestPermissionsResult: $lat")
-                                    Log.d(TAG, "onRequestPermissionsResult: $lon")
-                                }
-                            }
-                    }
-                } else {
-                    Toast.makeText(conti.get()!!, "Permission Denied", Toast.LENGTH_SHORT)
-                        .show()
-                }
-                return
-            }
-        }
-    }
-
-
     override fun getLat() : Double{
         return lat
     }
