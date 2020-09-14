@@ -1,7 +1,7 @@
 package com.codecool.holabusz.network
 
 import android.graphics.ColorSpace
-import com.codecool.holabusz.model.Model
+import com.codecool.holabusz.model.StopResponse
 import io.reactivex.Flowable
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -32,7 +32,7 @@ interface RequestApi {
         @Query("lat") lat: Double,
         @Query("clientLon") clientLon: Double,
         @Query("clientLat") clientLat: Double,
-    ): Flowable<Model>
+    ): Flowable<ColorSpace.Model>
 
     @GET("stops-for-location.json?" +
             "&version=" +
@@ -46,14 +46,14 @@ interface RequestApi {
         @Query("lon") lon: Double,
         @Query("lat") lat: Double,
         @Query("radius") radius : Int
-    ): Flowable<Model>
+    ): Flowable<StopResponse>
 
     @GET("stops-for-location.json?")
     fun getStopsForLocation2(
         @Query("key") key: String,
         @Query("lon") lon: Double,
         @Query("lat") lat: Double,
-    ): Flowable<Model>
+    ): Flowable<ColorSpace.Model>
 
 
     @GET("schedule-for-stop.json?" +
@@ -65,7 +65,7 @@ interface RequestApi {
     fun getScheduleForStop(
         @Query("key") key: String,
         @Query("stopID") stopId: String,
-    ): Flowable<Model>
+    ): Flowable<ColorSpace.Model>
 
     @GET("trip-details.json?" +
             "key=key&version=version&appVersion=appVersion&includeReferences=includeReferences" +
@@ -75,5 +75,6 @@ interface RequestApi {
         @Query("key") key: String,
         @Query("tripId") tripId: String,
     )
+
 
 }
