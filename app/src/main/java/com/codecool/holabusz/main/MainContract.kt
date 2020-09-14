@@ -1,6 +1,8 @@
 package com.codecool.holabusz.main
 
 import android.content.Context
+import com.codecool.holabusz.model.Stop
+import com.codecool.holabusz.network.RequestApi
 import java.lang.ref.WeakReference
 
 interface MainContract {
@@ -10,14 +12,14 @@ interface MainContract {
         fun showLoading()
         fun hideLoading()
         fun checkPermission()
-        val presenter: com.codecool.holabusz.main.MainPresenter
+        fun successfullyLoaded(stops: MutableList<Stop>)
     }
 
     interface MainPresenter {
 
-        fun onAttach(view: MainView)
+        fun onAttach(view: MainContract.MainView)
         fun onDetach()
-
+        val requestApi: RequestApi
     }
 
 }

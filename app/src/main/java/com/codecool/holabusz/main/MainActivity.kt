@@ -1,7 +1,6 @@
 package com.codecool.holabusz.main
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -12,23 +11,18 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codecool.holabusz.R
-import com.codecool.holabusz.model.Model
+import com.codecool.holabusz.model.Stop
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
-import org.koin.android.ext.android.inject
-import org.koin.core.context.KoinContextHandler.get
-import org.koin.core.parameter.parametersOf
-import java.lang.ref.WeakReference
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    override val presenter: MainPresenter by inject { parametersOf(this)}
-    private lateinit var adapter: MainAdapter
-    var heresTheBus : List<Model> = mutableListOf()
-    private val weakContext : WeakReference<Context> = WeakReference(this)
+    private lateinit var presenter: MainPresenter
+    var heresTheBus : MutableList<Stop> = mutableListOf<Stop>()
+    var stopCount : Int = 0
 
     private var lat : Double = 0.0
     private var lon : Double = 0.0
@@ -37,8 +31,9 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initRecyclerView()
+        showLoading()
 
+        presenter = MainPresenter()
         presenter.onAttach(this)
 
     }
@@ -46,9 +41,10 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onResume() {
         super.onResume()
         checkPermission()
-        // adapter.submitList(presenter.getData())
+        presenter.requestStops(mainActivity = this)
 
     }
+
 
 
     override fun checkPermission() {
@@ -88,6 +84,12 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             }
         }
     }
+
+    override fun successfullyLoaded(stops: MutableList<Stop>) {
+        hideLoading()
+        setAdapter()
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
         when (requestCode) {
@@ -111,13 +113,15 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         }
     }
 
-    private fun initRecyclerView(){
+
+    private fun setAdapter(){
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = MainAdapter()
-            adapter = adapter
+            adapter = MainAdapter(heresTheBus)
         }
     }
+
+
 
     override fun showLoading() {
         progressBar.visibility = View.VISIBLE

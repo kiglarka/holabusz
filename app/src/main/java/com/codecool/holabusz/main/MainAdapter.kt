@@ -1,16 +1,14 @@
 package com.codecool.holabusz.main
 
-import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.codecool.holabusz.R
-import com.codecool.holabusz.model.Model
+import com.codecool.holabusz.model.Stop
+import kotlinx.android.synthetic.main.row_item.view.*
 
-class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    var vehicles: List<Model> = ArrayList()
+class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     class MainViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // TODO: 2020.09.01. itemview.idName would refer to the view
@@ -19,32 +17,31 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         val vehicleImage : Image = itemView.vehicleImage
         val vehicleShortName : String = itemView.vehicleShortName
         val minutes = itemView.minutes
-
          */
 
-        fun bind(model : Model) {
+        val nameView = itemView.textView
+
+        fun bind(stop : Stop) {
             // vehicleImage.setimage = vehicle.image
             // vehicleShortName.text = vehicle.shortName
             // minures = vehicle.minute
+
+            nameView.text = stop.toString()
         }
     }
 
-    fun submitList(vehicleList : List<Model>) { vehicles = vehicleList}
-
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return MainViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.activity_main,parent,false)
-        )
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.row_item,parent,false)
+        return MainViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val currentItem = stops.get(position)
         when(holder) {
-            is MainViewHolder -> { holder.bind(vehicles.get(position))}
+            is MainViewHolder -> { holder.bind(currentItem)}
         }
     }
 
-    override fun getItemCount(): Int {
-        return vehicles.size
-    }
+    override fun getItemCount() = stops.size
+
 }
