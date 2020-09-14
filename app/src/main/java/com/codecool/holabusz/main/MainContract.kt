@@ -12,7 +12,7 @@ interface MainContract {
         fun showLoading()
         fun hideLoading()
         fun checkPermission()
-        fun successfullyLoaded(stops: MutableList<Stop>)
+        fun successfullyLoaded()
     }
 
     interface MainPresenter {

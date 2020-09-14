@@ -6,7 +6,6 @@ import com.codecool.holabusz.model.StopListResponse
 import com.codecool.holabusz.model.StopResponse
 import com.codecool.holabusz.network.RequestApi
 import com.codecool.holabusz.network.RetrofitClient
-import com.google.android.gms.location.FusedLocationProviderClient
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -14,7 +13,7 @@ import io.reactivex.schedulers.Schedulers
 
 class MainPresenter() : MainContract.MainPresenter {
 
-    private var stops : MutableList<Stop> = mutableListOf()
+    var stops : MutableList<Stop> = mutableListOf()
 
     override val requestApi : RequestApi
         get() {
@@ -22,7 +21,7 @@ class MainPresenter() : MainContract.MainPresenter {
         }
 
     private var view : MainContract.MainView? = null
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    //private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var lat : Double = 0.0
     private var lon : Double = 0.0
@@ -52,7 +51,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
                 override fun onComplete() {
                     try {
-                        view?.successfullyLoaded(stops)
+                        view?.successfullyLoaded()
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -66,7 +65,7 @@ class MainPresenter() : MainContract.MainPresenter {
                         var id: String = stopsData.get(i).id
                         var name : String = stopsData.get(i).name
 
-                        mainActivity.heresTheBus.add(Stop(id,name))
+                        stops.add(Stop(id,name))
                     }
                 }
             })

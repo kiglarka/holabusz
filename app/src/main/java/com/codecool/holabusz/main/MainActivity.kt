@@ -11,7 +11,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codecool.holabusz.R
-import com.codecool.holabusz.model.Stop
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
@@ -21,8 +20,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private lateinit var presenter: MainPresenter
-    var heresTheBus : MutableList<Stop> = mutableListOf<Stop>()
-    var stopCount : Int = 0
+    //var heresTheBus : MutableList<Stop> = mutableListOf<Stop>()
+    //var stopCount : Int = 0
 
     private var lat : Double = 0.0
     private var lon : Double = 0.0
@@ -85,7 +84,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         }
     }
 
-    override fun successfullyLoaded(stops: MutableList<Stop>) {
+    override fun successfullyLoaded() {
         hideLoading()
         setAdapter()
     }
@@ -117,7 +116,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     private fun setAdapter(){
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = MainAdapter(heresTheBus)
+            adapter = MainAdapter(presenter.stops)
         }
     }
 
