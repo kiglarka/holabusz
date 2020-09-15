@@ -10,7 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlin.math.absoluteValue
+import kotlin.math.acos
 
 class MainPresenter() : MainContract.MainPresenter {
 
@@ -22,7 +22,6 @@ class MainPresenter() : MainContract.MainPresenter {
         }
 
     private var view : MainContract.MainView? = null
-    //private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var lat : Double = 0.0
     private var lon : Double = 0.0
@@ -64,17 +63,43 @@ class MainPresenter() : MainContract.MainPresenter {
                     var responseData : StopListResponse = stopResponse.data
                     var stopsData : List<Stop> = responseData.list
 
-                    for (i in 0..stopsData.size-1) {
-                        var id: String = stopsData.get(i).id
-                        var name : String = stopsData.get(i).name
-                        var direction = stopsData.get(i).direction
-                        var lat: String = stopsData.get(i).lat
-                        var lon: String = stopsData.get(i).lon
+                    for (i in 0 until stopsData.size) {
+                        val id: String = stopsData.get(i).id
+                        val name : String = stopsData.get(i).name
+                        val direction = stopsData.get(i).direction
+                        val lat: Float = stopsData.get(i).lat.toFloat()
+                        val lon: Float = stopsData.get(i).lon.toFloat()
 
-                        stops.add(Stop(id,name,direction,lat,lon))
+                        val distance = meterDistanceBetweenPoints(view?.provideCurrentLat()!!,view?.provideCurrentLon()!!,lat,lon)
+
+                        stops.add(Stop(id,name,direction,lat,lon,distance))
                     }
                 }
             })
+    }
+
+    private fun meterDistanceBetweenPoints(currLat : Float, currLon: Float, stopLat : Float, stopLon : Float) : Double {
+        val pk : Float = (180F / Math.PI).toFloat()
+
+        val a1 : Float = currLat / pk
+        val a2 : Float = currLon / pk
+        val b1 : Float = stopLat / pk
+        val b2 : Float = stopLon / pk
+
+        val t1 : Double = Math.cos(a1.toDouble()) * Math.cos(a2.toDouble()) * Math.cos(b1.toDouble()) * Math.cos(
+            b2.toDouble())
+
+        val t2 : Double = Math.cos(a1.toDouble()) * Math.sin(a2.toDouble()) * Math.cos(b1.toDouble()) * Math.sin(
+            b2.toDouble()
+        )
+
+        val t3 : Double = Math.sin(a1.toDouble()) * Math.sin(b1.toDouble())
+
+        val tt : Double = acos(t1 + t2 + t3)
+
+        return 6366000 * tt
+
+
     }
 
 

@@ -35,7 +35,7 @@ interface RequestApi {
     ): Flowable<ColorSpace.Model>
 
     @GET("stops-for-location.json?" +
-            "&version=" +
+            "&version=3" +
             "&appVersion=" +
             "&includeReferences=" +
             "&lonSpan=&latSpan=" +

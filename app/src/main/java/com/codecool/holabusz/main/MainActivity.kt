@@ -23,8 +23,11 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     //var heresTheBus : MutableList<Stop> = mutableListOf<Stop>()
     //var stopCount : Int = 0
 
-    private var lat : Double = 0.0
-    private var lon : Double = 0.0
+    private var lat : Float = 0.0F
+    private var lon : Float = 0.0F
+
+    override fun provideCurrentLat(): Float { return lat }
+    override fun provideCurrentLon(): Float { return lon }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,11 +47,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-    }
-
     override fun checkPermission() {
         if (ContextCompat.checkSelfPermission(this@MainActivity,
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -59,8 +57,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
                 .addOnSuccessListener { location ->
                     if (location != null) {
-                        lat = location.latitude
-                        lon = location.longitude
+                        lat = location.latitude.toFloat()
+                        lon = location.longitude.toFloat()
                         Log.d(TAG, "onRequestPermissionsResult: $lat")
                         Log.d(TAG, "onRequestPermissionsResult: $lon")
                     } else {
@@ -119,7 +117,10 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     private fun setAdapter(){
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = MainAdapter(presenter.stops)
+            // TODO: 2020.09.15. filters to put to another class 
+            val allStops = presenter.stops
+            adapter = MainAdapter(allStops)
+            //testText.text = nearbyStops.size.toString()
             adapter = adapter
         }
     }

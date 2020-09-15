@@ -13,6 +13,8 @@ interface MainContract {
         fun hideLoading()
         fun checkPermission()
         fun successfullyLoaded()
+        fun provideCurrentLat(): Float
+        fun provideCurrentLon(): Float
     }
 
     interface MainPresenter {
