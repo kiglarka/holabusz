@@ -117,6 +117,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = MainAdapter(presenter.stops)
+            adapter = adapter
         }
     }
 

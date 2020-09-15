@@ -48,14 +48,6 @@ interface RequestApi {
         @Query("radius") radius : Int
     ): Flowable<StopResponse>
 
-    @GET("stops-for-location.json?")
-    fun getStopsForLocation2(
-        @Query("key") key: String,
-        @Query("lon") lon: Double,
-        @Query("lat") lat: Double,
-    ): Flowable<ColorSpace.Model>
-
-
     @GET("schedule-for-stop.json?" +
                 "key=key&version=version&appVersion=appVersion" +
                 "&includeReferences=includeReferences" +
