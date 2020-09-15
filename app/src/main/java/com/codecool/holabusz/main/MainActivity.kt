@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onResume() {
         super.onResume()
         checkPermission()
-        presenter.requestStops(mainActivity = this)
+        presenter.requestStops()
 
     }
 

@@ -30,13 +30,13 @@ class MainPresenter() : MainContract.MainPresenter {
     override fun onDetach() { this.view = null }
 
     fun getStopObservable() : Observable<StopResponse> {
-        return requestApi.getStopsForLocation(key = "apaiary-test",lon = 47.477900,lat=19.045807,radius = 100)
+        return requestApi.getStopsForLocation(key = "apaiary-test",lon = 47.477900,lat=19.045807,radius = 50)
             .toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun requestStops(mainActivity: MainActivity) {
+    override fun requestStops() {
 
         getStopObservable()
             .subscribe(object : io.reactivex.Observer<StopResponse?> {
