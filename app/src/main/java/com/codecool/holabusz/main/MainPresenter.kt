@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlin.math.absoluteValue
 
 class MainPresenter() : MainContract.MainPresenter {
 
@@ -30,7 +31,7 @@ class MainPresenter() : MainContract.MainPresenter {
     override fun onDetach() { this.view = null }
 
     fun getStopObservable() : Observable<StopResponse> {
-        return requestApi.getStopsForLocation(key = "apaiary-test",lon = 47.477900,lat=19.045807,radius = 50)
+        return requestApi.getStopsForLocation(key = "apaiary-test",lon = 47.477900,lat=19.045807,radius = 100)
             .toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -58,14 +59,19 @@ class MainPresenter() : MainContract.MainPresenter {
                 }
 
                 override fun onNext(stopResponse: StopResponse) {
+                    stops.clear()
+
                     var responseData : StopListResponse = stopResponse.data
                     var stopsData : List<Stop> = responseData.list
 
                     for (i in 0..stopsData.size-1) {
                         var id: String = stopsData.get(i).id
                         var name : String = stopsData.get(i).name
+                        var direction = stopsData.get(i).direction
+                        var lat: String = stopsData.get(i).lat
+                        var lon: String = stopsData.get(i).lon
 
-                        stops.add(Stop(id,name))
+                        stops.add(Stop(id,name,direction,lat,lon))
                     }
                 }
             })
