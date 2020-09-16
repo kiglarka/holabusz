@@ -17,12 +17,7 @@ data class Stop(
 
 data class Departure(
     val stopId: String,
-    val stopTimes: StopTime,
-
-)
-
-data class StopTime(
     val stopHeadsign: String,
-    val departureTime: Int,
-    val tripId: String,
+    val departureTime: String,
+    val tripId: String
 )

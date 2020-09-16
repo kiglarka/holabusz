@@ -63,7 +63,7 @@ class MainPresenter() : MainContract.MainPresenter {
     fun requestStops() {
 
         getStopObservable().toObservable()
-            .subscribe(object : io.reactivex.Observer<StopResponse?> {
+            .subscribe(object : Observer<StopResponse?> {
 
                 override fun onSubscribe(d: Disposable) {
                     Log.d(TAG, "onSubscribe: subscribed OK")
@@ -84,10 +84,24 @@ class MainPresenter() : MainContract.MainPresenter {
                 override fun onNext(stopResponse: StopResponse) {
                     stops.clear()
 
-                    var responseData : StopListResponse = stopResponse.data
-                    var stopsData : List<Stop> = responseData.list
+                    var responseData: StopListResponse = stopResponse.data
+                    var stopsData: List<Stop> = responseData.list
 
-                    stops = stopsData.map { Stop(it.id,it.name,it.direction,it.lat,it.lon,meterDistanceBetweenPoints(view?.provideCurrentLat()!!,view?.provideCurrentLon()!!,it.lat,it.lon)) }.toMutableList()
+                    stops = stopsData.map {
+                        Stop(
+                            it.id,
+                            it.name,
+                            it.direction,
+                            it.lat,
+                            it.lon,
+                            meterDistanceBetweenPoints(
+                                view?.provideCurrentLat()!!,
+                                view?.provideCurrentLon()!!,
+                                it.lat,
+                                it.lon
+                            )
+                        )
+                    }.toMutableList()
 
                 }
             })
@@ -96,7 +110,7 @@ class MainPresenter() : MainContract.MainPresenter {
     fun getDepartures() {
 
         getDepartureObservable().toObservable()
-            .subscribe(object: Observer<DepartureResponse?>{
+            .subscribe(object : Observer<DepartureResponse?> {
                 override fun onSubscribe(d: Disposable) {
                     Log.d(TAG, "onSubscribe: subscribed OK")
                 }
@@ -108,12 +122,11 @@ class MainPresenter() : MainContract.MainPresenter {
                     departures = departureData.map {
                         Departure(
                             it.stopId,
-                            StopTime(
-                                it.stopTimes.stopHeadsign,
-                                it.stopTimes.departureTime,
-                                it.stopTimes.tripId
-                            )
+                            it.stopHeadsign,
+                            it.departureTime,
+                            it.tripId
                         )
+
                     }.toMutableList()
                 }
 
@@ -129,7 +142,7 @@ class MainPresenter() : MainContract.MainPresenter {
                     }
 
 
-            }
+                }
 
                 /*
 
@@ -160,7 +173,7 @@ class MainPresenter() : MainContract.MainPresenter {
                 })
 
                  */
-    })
+            })
     }
 
 
