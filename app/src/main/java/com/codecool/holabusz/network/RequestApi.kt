@@ -7,8 +7,6 @@ import retrofit2.http.Query
 
 interface RequestApi {
 
-
-
     @GET("arrivals-and-departures-for-stop.json?" +
                 "key=key" +
                 "&version=3" +
@@ -24,7 +22,7 @@ interface RequestApi {
         @Query("key") key: String,
         @Query ("stopId") stopId: String,
         @Query("limit") limit: Int
-    ): Single<HashMap<String, Any>>
+    ): Single<StopResponse>
 
 
 

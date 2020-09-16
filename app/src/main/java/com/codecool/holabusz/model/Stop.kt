@@ -1,8 +1,11 @@
 package com.codecool.holabusz.model
 
 data class StopResponse(val status : String, val currentTime : String, val data : StopListResponse)
+data class DepartureResponse(val status : String, val currentTime : String, val data : DepartureListResponse)
 
 data class StopListResponse(val list : List<Stop>)
+
+data class DepartureListResponse(val list : List<Departure>)
 
 data class Stop(
     val id: String,
@@ -11,4 +14,9 @@ data class Stop(
     val lat: Float,
     val lon: Float,
     val distance: Double
+)
+
+data class Departure(
+    val stopId: String,
+    val stopTimes: List<Map<String, Any>>
 )

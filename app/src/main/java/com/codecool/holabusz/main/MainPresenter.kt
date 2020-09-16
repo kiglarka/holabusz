@@ -1,9 +1,7 @@
 package com.codecool.holabusz.main
 
 import android.util.Log
-import com.codecool.holabusz.model.Stop
-import com.codecool.holabusz.model.StopListResponse
-import com.codecool.holabusz.model.StopResponse
+import com.codecool.holabusz.model.*
 import com.codecool.holabusz.network.RequestApi
 import com.codecool.holabusz.network.RetrofitClient
 import io.reactivex.Observable
@@ -58,13 +56,36 @@ class MainPresenter() : MainContract.MainPresenter {
     
      */
 
-    private fun nearbyStopIds(): List<String> {
-        // TODO: 2020.09.16. to complete
-        return listOf()
+    fun getDepartures(currLat: Float, currLon: Float) {
+
+        val observableSecond = requestApi.getArrivalsAndDeparturesForStop(
+            key = "apaiary-test", stopId = listOf("BKK_F02461").joinToString(
+                "&stopId="
+            ), limit = 60
+        )
+
+        val result = observableSecond.toObservable()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                // onNext
+                { n ->
+                    println(n)
+                    // TODO: 2020.09.16. yeah 
+
+
+                },
+                // onError
+                { e -> e.printStackTrace() },
+                //OnComplete
+                { view?.successfullyLoaded() }
+            )
+
+
     }
 
 
-    fun getDepartures(currLat: Float, currLon: Float) {
+    fun getComplexData(currLat: Float, currLon: Float) {
 
 
         val observableFirst = requestApi.getStopsForLocation(
@@ -112,6 +133,7 @@ class MainPresenter() : MainContract.MainPresenter {
                     ), limit = 60
                 )
             }
+
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 

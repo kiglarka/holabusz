@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         super.onResume()
 
         presenter.getDepartures(lat,lon)
+        // presenter.getComplexData(lat,lon)
 
     }
 
