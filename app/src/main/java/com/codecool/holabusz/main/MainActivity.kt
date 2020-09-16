@@ -11,6 +11,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codecool.holabusz.R
+import com.codecool.holabusz.model.Departure
+import com.codecool.holabusz.model.Stop
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
@@ -43,7 +45,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onResume() {
         super.onResume()
 
-        presenter.getDepartures(lat,lon)
+        //presenter.requestStops()
+        presenter.getDepartures()
         // presenter.getComplexData(lat,lon)
 
     }
@@ -67,6 +70,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
                             TAG,
                             "onRequestPermissionsResult: nincs location!!! $location"
                         )
+                        Toast.makeText(this,"No location detected",Toast.LENGTH_LONG).show()
                     }
                 }
         }
@@ -114,8 +118,19 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         }
     }
 
+    override fun setAdapterWithData(data : List<Departure>){
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            // TODO: 2020.09.15. filters to put to another class
+            adapter = DepartureAdapter(data)
+            testText.text = data.size.toString()
+            adapter = adapter
+        }
+    }
 
-    private fun setAdapter(){
+
+
+    override fun setAdapter(){
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             // TODO: 2020.09.15. filters to put to another class 

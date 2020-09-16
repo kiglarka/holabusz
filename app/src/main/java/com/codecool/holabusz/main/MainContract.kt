@@ -1,6 +1,7 @@
 package com.codecool.holabusz.main
 
 import android.content.Context
+import com.codecool.holabusz.model.Departure
 import com.codecool.holabusz.model.Stop
 import com.codecool.holabusz.network.RequestApi
 import java.lang.ref.WeakReference
@@ -15,6 +16,8 @@ interface MainContract {
         fun successfullyLoaded()
         fun provideCurrentLat(): Float
         fun provideCurrentLon(): Float
+        fun setAdapter()
+        fun setAdapterWithData(data: List<Departure>)
     }
 
     interface MainPresenter {

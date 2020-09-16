@@ -5,6 +5,7 @@ import com.codecool.holabusz.model.*
 import com.codecool.holabusz.network.RequestApi
 import com.codecool.holabusz.network.RetrofitClient
 import io.reactivex.Observable
+import io.reactivex.Observer
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -14,6 +15,7 @@ import kotlin.math.acos
 class MainPresenter() : MainContract.MainPresenter {
 
     var stops: MutableList<Stop> = mutableListOf()
+    var departures: MutableList<Departure> = mutableListOf()
 
     override val requestApi: RequestApi
         get() {
@@ -46,42 +48,119 @@ class MainPresenter() : MainContract.MainPresenter {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-
-    /*
     fun getDepartureObservable(): Single<DepartureResponse> {
         return requestApi.getArrivalsAndDeparturesForStop(
-            key = "apaiary-test", stopId = nearbyStopIds().joinToString(
-                "&stopId="),limit = 60)
-    }
-    
-     */
-
-    fun getDepartures(currLat: Float, currLon: Float) {
-
-        val observableSecond = requestApi.getArrivalsAndDeparturesForStop(
             key = "apaiary-test", stopId = listOf("BKK_F02461").joinToString(
                 "&stopId="
             ), limit = 60
         )
 
-        val result = observableSecond.toObservable()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                // onNext
-                { n ->
-                    println(n)
-                    // TODO: 2020.09.16. yeah 
+    }
 
 
+    fun requestStops() {
+
+        getStopObservable().toObservable()
+            .subscribe(object : io.reactivex.Observer<StopResponse?> {
+
+                override fun onSubscribe(d: Disposable) {
+                    Log.d(TAG, "onSubscribe: subscribed OK")
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.d(TAG, e.stackTraceToString())
+                }
+
+                override fun onComplete() {
+                    try {
+                        view?.successfullyLoaded()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                override fun onNext(stopResponse: StopResponse) {
+                    stops.clear()
+
+                    var responseData : StopListResponse = stopResponse.data
+                    var stopsData : List<Stop> = responseData.list
+
+                    stops = stopsData.map { Stop(it.id,it.name,it.direction,it.lat,it.lon,meterDistanceBetweenPoints(view?.provideCurrentLat()!!,view?.provideCurrentLon()!!,it.lat,it.lon)) }.toMutableList()
+
+                }
+            })
+    }
+
+    fun getDepartures() {
+
+        getDepartureObservable().toObservable()
+            .subscribe(object: Observer<DepartureResponse?>{
+                override fun onSubscribe(d: Disposable) {
+                    Log.d(TAG, "onSubscribe: subscribed OK")
+                }
+
+                override fun onNext(departureResponse: DepartureResponse) {
+                    var responseData: DepartureListResponse = departureResponse.data
+                    var departureData: List<Departure> = responseData.entry
+
+                    departures = departureData.map {
+                        Departure(
+                            it.stopId,
+                            StopTime(
+                                it.stopTimes.stopHeadsign,
+                                it.stopTimes.departureTime,
+                                it.stopTimes.tripId
+                            )
+                        )
+                    }.toMutableList()
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.d(TAG, e.stackTraceToString())
+                }
+
+                override fun onComplete() {
+                    try {
+                        view?.setAdapterWithData(departures)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+
+            }
+
+                /*
+
+                {departureResponse ->
+
+                    var responseData: DepartureListResponse = departureResponse.data
+                    var departureData: List<Departure> = responseData.entry
+
+                    departures = departureData.map {
+                        Departure(
+                            it.stopId,
+                            StopTime(
+                                it.stopTimes.stopHeadsign,
+                                it.stopTimes.departureTime,
+                                it.stopTimes.tripId
+                            )
+                        )
+                    }.toMutableList()
+
+
+                    view?.hideLoading()
+                    Log.d(TAG, departures.toString())
+                    view?.setAdapterWithData(departures)
                 },
-                // onError
-                { e -> e.printStackTrace() },
-                //OnComplete
-                { view?.successfullyLoaded() }
-            )
+                { e ->
+                    e.printStackTrace()
+                    view?.hideLoading()
+                })
 
-
+                 */
+    })
     }
 
 
@@ -94,16 +173,6 @@ class MainPresenter() : MainContract.MainPresenter {
             lat = 19.045807,
             radius = 100
         )
-
-        /*
-        val observableSecond = requestApi.getArrivalsAndDeparturesForStop(
-            key = "apaiary-test", stopId = nearbyStopIds().joinToString(
-                "&stopId="
-            ), limit = 60
-        )
-
-         */
-
 
         var result = observableFirst
             /*
@@ -154,6 +223,7 @@ class MainPresenter() : MainContract.MainPresenter {
                 }
 
             )
+
     }
 
     private fun meterDistanceBetweenPoints(
@@ -196,5 +266,6 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
 }
+
 
 

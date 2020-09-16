@@ -1,5 +1,6 @@
 package com.codecool.holabusz.network
 
+import com.codecool.holabusz.model.DepartureResponse
 import com.codecool.holabusz.model.StopResponse
 import io.reactivex.Single
 import retrofit2.http.GET
@@ -8,13 +9,10 @@ import retrofit2.http.Query
 interface RequestApi {
 
     @GET("arrivals-and-departures-for-stop.json?" +
-                "key=key" +
                 "&version=3" +
                 "&appVersion=" +
                 "&includeReferences=true" +
-                "&stopId=stopId" +
                 "&onlyDepartures=true" +
-                "&limit=limit" +
                 "&minutesBefore=2" +
                 "&minutesAfter=30"
     )
@@ -22,7 +20,7 @@ interface RequestApi {
         @Query("key") key: String,
         @Query ("stopId") stopId: String,
         @Query("limit") limit: Int
-    ): Single<StopResponse>
+    ): Single<DepartureResponse>
 
 
 
