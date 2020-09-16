@@ -30,8 +30,11 @@ class DepartureAdapter(private val departures: List<Departure>) : RecyclerView.A
             // minures = vehicle.minute
 
 
-            nameView.text = "►" + departure.stopHeadsign
-            minuteView.text = ((departure.departureTime - System.currentTimeMillis()/1000)/60).toString()
+            nameView.text = "► " + departure.stopHeadsign
+            var remainingTime = ((departure.departureTime - System.currentTimeMillis()/1000)/60)
+            minuteView.text =
+                if ( remainingTime>1 ) remainingTime.toString() + " perc"
+                else "MOST"
         }
     }
 

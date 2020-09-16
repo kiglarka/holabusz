@@ -13,7 +13,7 @@ interface RequestApi {
                 "&appVersion=" +
                 "&includeReferences=false" +
                 "&onlyDepartures=true" +
-                "&minutesBefore=2" +
+                "&minutesBefore=1" +
                 "&minutesAfter=30"
     )
     fun getArrivalsAndDeparturesForStop(

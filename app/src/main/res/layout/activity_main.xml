@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         android:src="@mipmap/bkk_logo"
-        />
+        android:contentDescription="@string/bkk_logo" />
 
 
     <TextView

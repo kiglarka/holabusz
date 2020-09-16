@@ -50,7 +50,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
     fun getDepartureObservable(): Single<DepartureResponse> {
         return requestApi.getArrivalsAndDeparturesForStop(
-            key = "apaiary-test", stopId = listOf("BKK_F02461").joinToString(
+            key = "apaiary-test", stopId = listOf("BKK_F00412").joinToString(
                 "&stopId="
             ), limit = 60
         )
@@ -111,7 +111,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
         var result2 = getDepartureObservable()
             .subscribe(
-                {departureResponse->
+                { departureResponse->
                     val responseData: DepartureListResponse = departureResponse.data
                     val departureData: StopTime = responseData.entry
                     val stopTime: List<Departure> = departureData.stopTimes
@@ -127,14 +127,13 @@ class MainPresenter() : MainContract.MainPresenter {
                     }.toMutableList()
 
                     try {
-                        Log.d(TAG, departures.toString())
+                        view?.hideLoading()
                         view?.setAdapterWithData(departures)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 },
                 { e ->
-
                     Log.d(TAG, e.stackTraceToString())
                     view?.hideLoading()
 
