@@ -4,7 +4,8 @@ data class StopResponse(val status : String, val currentTime : String, val data 
 data class DepartureResponse(val status : String, val currentTime : String, val data : DepartureListResponse)
 
 data class StopListResponse(val list : List<Stop>)
-data class DepartureListResponse(val entry : List<Departure>)
+data class DepartureListResponse(val entry : StopTime)
+data class StopTime(val stopTimes: List<Departure>)
 
 data class Stop(
     val id: String,
@@ -15,9 +16,9 @@ data class Stop(
     val distance: Double
 )
 
+
 data class Departure(
-    val stopId: String,
     val stopHeadsign: String,
-    val departureTime: String,
-    val tripId: String
+    val departureTime: Int,
+    val tripId: String,
 )

@@ -117,11 +117,14 @@ class MainPresenter() : MainContract.MainPresenter {
 
                 override fun onNext(departureResponse: DepartureResponse) {
                     var responseData: DepartureListResponse = departureResponse.data
-                    var departureData: List<Departure> = responseData.entry
+                    var departureData: StopTime = responseData.entry
+                    var stopTime: List<Departure> = departureData.stopTimes
 
-                    departures = departureData.map {
+                    Log.d(TAG, stopTime.toString())
+
+                    departures = stopTime.map {
                         Departure(
-                            it.stopId,
+
                             it.stopHeadsign,
                             it.departureTime,
                             it.tripId
@@ -136,6 +139,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
                 override fun onComplete() {
                     try {
+                        Log.d(TAG, departures.toString())
                         view?.setAdapterWithData(departures)
                     } catch (e: Exception) {
                         e.printStackTrace()
