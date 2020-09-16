@@ -16,7 +16,6 @@ data class Stop(
     val distance: Double
 )
 
-
 data class Departure(
     val stopHeadsign: String,
     val departureTime: Int,

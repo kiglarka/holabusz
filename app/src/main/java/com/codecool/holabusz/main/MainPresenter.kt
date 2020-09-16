@@ -109,18 +109,50 @@ class MainPresenter() : MainContract.MainPresenter {
 
     fun getDepartures() {
 
+        getDepartureObservable()
+            .subscribe(
+                {departureResponse->
+                    val responseData: DepartureListResponse = departureResponse.data
+                    val departureData: StopTime = responseData.entry
+                    val stopTime: List<Departure> = departureData.stopTimes
+
+                    departures = stopTime.map {
+                        Departure(
+
+                            it.stopHeadsign,
+                            it.departureTime,
+                            it.tripId
+                        )
+
+                    }.toMutableList()
+
+                    try {
+                        Log.d(TAG, departures.toString())
+                        view?.setAdapterWithData(departures)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                },
+                { e ->
+
+                    Log.d(TAG, e.stackTraceToString())
+                    view?.hideLoading()
+
+                })
+
+
+        /*
         getDepartureObservable().toObservable()
             .subscribe(object : Observer<DepartureResponse?> {
+
                 override fun onSubscribe(d: Disposable) {
                     Log.d(TAG, "onSubscribe: subscribed OK")
                 }
 
                 override fun onNext(departureResponse: DepartureResponse) {
-                    var responseData: DepartureListResponse = departureResponse.data
-                    var departureData: StopTime = responseData.entry
-                    var stopTime: List<Departure> = departureData.stopTimes
-
-                    Log.d(TAG, stopTime.toString())
+                    val responseData: DepartureListResponse = departureResponse.data
+                    val departureData: StopTime = responseData.entry
+                    val stopTime: List<Departure> = departureData.stopTimes
 
                     departures = stopTime.map {
                         Departure(
@@ -144,40 +176,10 @@ class MainPresenter() : MainContract.MainPresenter {
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
-
-
                 }
-
-                /*
-
-                {departureResponse ->
-
-                    var responseData: DepartureListResponse = departureResponse.data
-                    var departureData: List<Departure> = responseData.entry
-
-                    departures = departureData.map {
-                        Departure(
-                            it.stopId,
-                            StopTime(
-                                it.stopTimes.stopHeadsign,
-                                it.stopTimes.departureTime,
-                                it.stopTimes.tripId
-                            )
-                        )
-                    }.toMutableList()
-
-
-                    view?.hideLoading()
-                    Log.d(TAG, departures.toString())
-                    view?.setAdapterWithData(departures)
-                },
-                { e ->
-                    e.printStackTrace()
-                    view?.hideLoading()
-                })
-
-                 */
             })
+
+         */
     }
 
 
