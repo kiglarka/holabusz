@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.codecool.holabusz.R
 import com.codecool.holabusz.model.Stop
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.row_item.view.*
 
 class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -25,6 +26,7 @@ class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<Recycler
             // vehicleImage.setimage = vehicle.image
             // vehicleShortName.text = vehicle.shortName
             // minures = vehicle.minute
+
 
             nameView.text = stop.toString()
         }

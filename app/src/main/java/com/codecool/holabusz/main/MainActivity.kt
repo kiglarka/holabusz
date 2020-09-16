@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onResume() {
         super.onResume()
 
-        presenter.requestStops()
+        presenter.getDepartures(lat,lon)
 
     }
 
@@ -118,9 +118,10 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             // TODO: 2020.09.15. filters to put to another class 
-            val allStops = presenter.stops
-            adapter = MainAdapter(allStops)
-            //testText.text = nearbyStops.size.toString()
+            //val allStops = presenter.stops
+            val filtered = presenter.filterNearByStops(250)
+            adapter = MainAdapter(filtered)
+            testText.text = filtered.size.toString()
             adapter = adapter
         }
     }

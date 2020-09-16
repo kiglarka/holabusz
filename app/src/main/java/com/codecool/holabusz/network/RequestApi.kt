@@ -1,38 +1,32 @@
 package com.codecool.holabusz.network
 
-import android.graphics.ColorSpace
 import com.codecool.holabusz.model.StopResponse
-import io.reactivex.Flowable
+import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface RequestApi {
 
-    @GET("arrivals-and-departures-for-location.json?" +
+
+
+    @GET("arrivals-and-departures-for-stop.json?" +
                 "key=key" +
-                "&version=version" +
-                "&appVersion=appVersion" +
-                "&includeReferences=includeReferences" +
-                "&lon=lon" +
-                "&lat=lat" +
-                "&lonSpan=lonSpan" +
-                "&latSpan=latSpan" +
-                "&radius=radius" +
-                "&onlyDepartures=onlyDepartures" +
+                "&version=3" +
+                "&appVersion=" +
+                "&includeReferences=true" +
+                "&stopId=stopId" +
+                "&onlyDepartures=true" +
                 "&limit=limit" +
-                "&minutesBefore=minutesBefore" +
-                "&minutesAfter=minutesAfter" +
-                "&groupLimit=groupLimit" +
-                "&clientLon=clientLon" +
-                "&clientLat=clientLat"
+                "&minutesBefore=2" +
+                "&minutesAfter=30"
     )
-    fun getArrivalsAndDeparturesForLocation(
+    fun getArrivalsAndDeparturesForStop(
         @Query("key") key: String,
-        @Query("lon") lon: Double,
-        @Query("lat") lat: Double,
-        @Query("clientLon") clientLon: Double,
-        @Query("clientLat") clientLat: Double,
-    ): Flowable<ColorSpace.Model>
+        @Query ("stopId") stopId: String,
+        @Query("limit") limit: Int
+    ): Single<HashMap<String, Any>>
+
+
 
     @GET("stops-for-location.json?" +
             "&version=3" +
@@ -46,7 +40,9 @@ interface RequestApi {
         @Query("lon") lon: Double,
         @Query("lat") lat: Double,
         @Query("radius") radius : Int
-    ): Flowable<StopResponse>
+    ): Single<StopResponse>
+
+    /*
 
     @GET("schedule-for-stop.json?" +
                 "key=key&version=version&appVersion=appVersion" +
@@ -68,5 +64,7 @@ interface RequestApi {
         @Query("tripId") tripId: String,
     )
 
+
+     */
 
 }
