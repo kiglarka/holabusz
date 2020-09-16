@@ -20,7 +20,7 @@ class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<Recycler
         val minutes = itemView.minutes
          */
 
-        val nameView = itemView.textView
+        val nameView = itemView.textView1
 
         fun bind(stop : Stop) {
             // vehicleImage.setimage = vehicle.image

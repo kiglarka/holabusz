@@ -109,7 +109,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
     fun getDepartures() {
 
-        getDepartureObservable()
+        var result2 = getDepartureObservable()
             .subscribe(
                 {departureResponse->
                     val responseData: DepartureListResponse = departureResponse.data

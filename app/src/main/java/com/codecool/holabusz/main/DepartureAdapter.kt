@@ -21,7 +21,8 @@ class DepartureAdapter(private val departures: List<Departure>) : RecyclerView.A
         val minutes = itemView.minutes
          */
 
-        val nameView = itemView.textView
+        val nameView = itemView.textView1
+        val minuteView = itemView.textView2
 
         fun bind(departure: Departure) {
             // vehicleImage.setimage = vehicle.image
@@ -29,7 +30,8 @@ class DepartureAdapter(private val departures: List<Departure>) : RecyclerView.A
             // minures = vehicle.minute
 
 
-            nameView.text = departure.toString()
+            nameView.text = "►" + departure.stopHeadsign
+            minuteView.text = ((departure.departureTime - System.currentTimeMillis()/1000)/60).toString()
         }
     }
 
