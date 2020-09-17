@@ -13,9 +13,6 @@ interface MainContract {
         fun showLoading()
         fun hideLoading()
         fun checkPermission()
-        fun successfullyLoaded()
-        fun provideCurrentLat(): Float
-        fun provideCurrentLon(): Float
         fun setAdapter()
         fun setAdapterWithData(data: List<Departure>)
     }

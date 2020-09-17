@@ -60,9 +60,21 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
 
-    fun requestStops() {
+    fun requestStops(currLat: Float, currLon: Float) {
 
-        getStopObservable().toObservable()
+        val stopSingle: Single<StopResponse> =
+            requestApi.getStopsForLocation(
+                key = "apaiary-test",
+                lon = currLat.toDouble(),
+                lat = currLon.toDouble(),
+                radius = 100
+            )
+
+
+        stopSingle
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .toObservable()
             .subscribe(object : Observer<StopResponse?> {
 
                 override fun onSubscribe(d: Disposable) {
@@ -75,17 +87,17 @@ class MainPresenter() : MainContract.MainPresenter {
 
                 override fun onComplete() {
                     try {
-                        view?.successfullyLoaded()
+                        view?.hideLoading()
+                        view?.setAdapter()
+
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
 
                 override fun onNext(stopResponse: StopResponse) {
-                    stops.clear()
-
-                    var responseData: StopListResponse = stopResponse.data
-                    var stopsData: List<Stop> = responseData.list
+                    val responseData: StopListResponse = stopResponse.data
+                    val stopsData: List<Stop> = responseData.list
 
                     stops = stopsData.map {
                         Stop(
@@ -95,8 +107,8 @@ class MainPresenter() : MainContract.MainPresenter {
                             it.lat,
                             it.lon,
                             meterDistanceBetweenPoints(
-                                view?.provideCurrentLat()!!,
-                                view?.provideCurrentLon()!!,
+                                currLat,
+                                currLon,
                                 it.lat,
                                 it.lon
                             )
@@ -111,7 +123,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
         var result2 = getDepartureObservable()
             .subscribe(
-                { departureResponse->
+                { departureResponse ->
                     val responseData: DepartureListResponse = departureResponse.data
                     val departureData: StopTime = responseData.entry
                     val stopTime: List<Departure> = departureData.stopTimes
@@ -200,8 +212,8 @@ class MainPresenter() : MainContract.MainPresenter {
              */
             .flatMap { stopResponse ->
 
-                var responseData: StopListResponse = stopResponse.data
-                var stopsData: List<Stop> = responseData.list
+                val responseData: StopListResponse = stopResponse.data
+                val stopsData: List<Stop> = responseData.list
 
                 stops = stopsData.map {
                     Stop(
@@ -227,7 +239,8 @@ class MainPresenter() : MainContract.MainPresenter {
             .subscribe(
                 {
                     try {
-                        view?.successfullyLoaded()
+                        view?.hideLoading()
+                        view?.setAdapter()
 
                     } catch (e: Exception) {
                         e.printStackTrace()

@@ -28,9 +28,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     private var lat : Float = 0.0F
     private var lon : Float = 0.0F
 
-    override fun provideCurrentLat(): Float { return lat }
-    override fun provideCurrentLon(): Float { return lon }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -46,8 +43,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onResume() {
         super.onResume()
 
-        //presenter.requestStops()
-        presenter.getDepartures()
+        presenter.requestStops(lat,lon)
+        // presenter.getDepartures()
         // presenter.getComplexData(lat,lon)
 
     }
@@ -91,11 +88,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         }
     }
 
-    override fun successfullyLoaded() {
-        hideLoading()
-        setAdapter()
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
         when (requestCode) {
@@ -136,7 +128,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             layoutManager = LinearLayoutManager(this@MainActivity)
             // TODO: 2020.09.15. filters to put to another class 
             //val allStops = presenter.stops
-            val filtered = presenter.filterNearByStops(250)
+            val filtered = presenter.filterNearByStops(550)
             adapter = MainAdapter(filtered)
             testText.text = filtered.size.toString()
             adapter = adapter
