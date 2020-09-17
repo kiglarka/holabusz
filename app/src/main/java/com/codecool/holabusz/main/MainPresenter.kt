@@ -23,15 +23,17 @@ class MainPresenter() : MainContract.MainPresenter {
 
     private var view: MainContract.MainView? = null
 
-    private var lat: Float = 0.0F
-    private var lon: Float = 0.0F
-
     override fun onAttach(view: MainContract.MainView) {
         this.view = view
     }
 
     override fun onDetach() {
         this.view = null
+    }
+
+    override fun firstRun() {
+        view?.hideAppBar()
+        view?.showLoading()
     }
 
 
@@ -43,8 +45,7 @@ class MainPresenter() : MainContract.MainPresenter {
             radius = 100
         )
 
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+
     }
 
     fun getDepartureObservable(): Single<DepartureResponse> {
@@ -60,15 +61,15 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
 
-    fun getStops(lat: Float, lon: Float) {
+    override fun getStops(lat: Float, lon: Float) {
 
         Log.d(TAG, "getStops: currlat $lat")
         Log.d(TAG, "getStops: currlon $lon")
 
-
-        var result = getStopObservable(lat,lon)
-            .subscribe( {
-                stopResponse ->
+        var result = getStopObservable(lat, lon)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ stopResponse ->
                 val responseData: StopListResponse = stopResponse.data
                 val stopsData: List<Stop> = responseData.list
 
@@ -79,7 +80,7 @@ class MainPresenter() : MainContract.MainPresenter {
                         it.direction,
                         it.lat,
                         it.lon,
-                        meterDistanceBetweenPoints(lat, lon, it.lat, it.lon).toDouble()
+                        meterDistanceBetweenPoints(lat, lon, it.lat, it.lon)
                     )
                 }.toMutableList()
 
@@ -101,8 +102,12 @@ class MainPresenter() : MainContract.MainPresenter {
                 })
     }
 
+    fun getStopName(stops: List<Stop>, stopId: String) : String {
+        return stops.filter{ it.id == stopId}.map { it.name }.joinToString()
+    }
 
-    fun getDepartures() {
+
+    override fun getDepartures() {
 
         var result2 = getDepartureObservable()
             .subscribe(
@@ -111,15 +116,7 @@ class MainPresenter() : MainContract.MainPresenter {
                     val departureData: StopTime = responseData.entry
                     val stopTime: List<Departure> = departureData.stopTimes
 
-                    departures = stopTime.map {
-                        Departure(
 
-                            it.stopHeadsign,
-                            it.departureTime,
-                            it.tripId
-                        )
-
-                    }.toMutableList()
 
                     try {
                         view?.hideLoading()
@@ -177,27 +174,25 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
 
-    fun getComplexData(currLat: Float, currLon: Float) {
+    override fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int) {
 
-        val observableFirst = requestApi.getStopsForLocation(
-            key = "apaiary-test",
-            lon = currLon,
-            lat = currLat,
-            radius = 100
-        )
+        val stopObservable = getStopObservable(currLat,currLon)
 
-        var result = observableFirst
+        var result = stopObservable
             /*
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-
              */
             .flatMap { stopResponse ->
 
                 val responseData: StopListResponse = stopResponse.data
                 val stopsData: List<Stop> = responseData.list
 
-                stops = stopsData.map {
+                stops = stopsData
+
+                    .filter { meterDistanceBetweenPoints(currLat, currLon, it.lat, it.lon).toInt() <= maxDistance }
+                    .map {
+
                     Stop(
                         it.id,
                         it.name,
@@ -208,24 +203,37 @@ class MainPresenter() : MainContract.MainPresenter {
                     )
                 }.toMutableList()
 
-
-
+                Log.d(TAG, "stopsIds: ${stops.map { it.id }}")
                 requestApi.getArrivalsAndDeparturesForStop(
                     key = "apaiary-test", stopId = stops.map { it.id }.joinToString(
-                        "%26stopId="
+                        "&stopId="
                     ), limit = 60
                 )
 
-
             }
-
-
 
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
             .subscribe(
-                {departureResponse ->
+                { departureResponse ->
+
+                    val responseData: DepartureListResponse = departureResponse.data
+                    val departureData: StopTime = responseData.entry
+                    val stopTime: List<Departure> = departureData.stopTimes
+
+
+
+                    departures = stopTime.map {
+                        Departure(
+                            it.stopId,
+                            getStopName(stops,it.stopId),
+                            it.stopHeadsign,
+                            it.departureTime,
+                            it.tripId,
+                        )
+
+                    }.toMutableList()
 
                     try {
                         view?.hideLoading()
@@ -242,9 +250,7 @@ class MainPresenter() : MainContract.MainPresenter {
                     view?.hideLoading()
 
                 }
-
             )
-
     }
 
     private fun meterDistanceBetweenPoints(

@@ -16,6 +16,7 @@ import com.codecool.holabusz.model.Stop
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
 
@@ -23,30 +24,35 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     private lateinit var presenter: MainPresenter
 
-    private var lat : Float = 0.0F
-    private var lon : Float = 0.0F
+    private var lat : Double = 47.516064
+    private var lon : Double = 19.056467
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        getSupportActionBar()?.hide()
-        showLoading()
-
         presenter = MainPresenter()
         presenter.onAttach(this)
 
+        presenter.firstRun()
+        //checkPermission()
+
+    }
+
+    override fun hideAppBar() {
+        getSupportActionBar()?.hide()
     }
 
     override fun onResume() {
         super.onResume()
-        checkPermission()
-        //presenter.getStops(47.516064.toFloat(),19.056467.toFloat())
 
-        presenter.getDepartures()
-        //presenter.getComplexData(47.516064.toFloat(),19.056467.toFloat())
+        // presenter.getStops(lat.toFloat(),lon.toFloat())
+        // presenter.getDepartures()
+
+        presenter.getComplexData(lat.toFloat(),lon.toFloat(), 300)
 
     }
+
 
     override fun checkPermission() {
         if (ContextCompat.checkSelfPermission(this@MainActivity,
@@ -58,8 +64,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
                 .addOnSuccessListener { location ->
                     if (location != null) {
-                        lat = location.latitude.toFloat()
-                        lon = location.longitude.toFloat()
+                        lat = location.latitude
+                        lon = location.longitude
                         Log.d(TAG, "onRequestPermissionsResult: $lat")
                         Log.d(TAG, "onRequestPermissionsResult: $lon")
                     } else {
@@ -73,7 +79,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         }
 
 
-        if (ContextCompat.checkSelfPermission(this@MainActivity,
+        else if (ContextCompat.checkSelfPermission(this@MainActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION) !=
             PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this@MainActivity,

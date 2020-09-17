@@ -28,7 +28,6 @@ class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<Recycler
             // vehicleShortName.text = vehicle.shortName
             // minures = vehicle.minute
 
-
             nameView.text = stop.name
             distanceView.text = stop.distance.toInt().toString() + " m"
 

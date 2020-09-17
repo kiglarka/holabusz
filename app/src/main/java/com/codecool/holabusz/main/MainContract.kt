@@ -15,15 +15,20 @@ interface MainContract {
         fun checkPermission()
         fun setAdapter(data: List<Stop>)
         fun setAdapterWithData(data: List<Departure>)
+        fun hideAppBar()
     }
 
     interface MainPresenter {
 
         fun onAttach(view: MainContract.MainView)
         fun onDetach()
+        fun firstRun()
         val requestApi: RequestApi
         fun filterNearByStops(meters: Int): List<Stop>
         fun getNearestStopId(): String?
+        fun getStops(lat: Float, lon: Float)
+        fun getDepartures()
+        fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int)
     }
 
 }

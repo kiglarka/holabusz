@@ -10,7 +10,7 @@ interface RequestApi {
     @GET("arrivals-and-departures-for-stop.json?" +
                 "&version=3" +
                 "&appVersion=" +
-                "&includeReferences=false" +
+                "&includeReferences=true" +
                 "&onlyDepartures=true" +
                 "&minutesBefore=1" +
                 "&minutesAfter=30"
