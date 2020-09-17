@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         // presenter.getStops(lat.toFloat(),lon.toFloat())
         // presenter.getDepartures()
 
-        presenter.getComplexData(lat.toFloat(),lon.toFloat(), 300)
+        presenter.getComplexData(lat.toFloat(),lon.toFloat(), 500)
 
     }
 
