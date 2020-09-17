@@ -19,11 +19,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
 
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-
     private lateinit var presenter: MainPresenter
-    //var heresTheBus : MutableList<Stop> = mutableListOf<Stop>()
-    //var stopCount : Int = 0
 
     private var lat : Float = 0.0F
     private var lon : Float = 0.0F
@@ -43,7 +39,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onResume() {
         super.onResume()
 
-        presenter.requestStops(lat,lon)
+        presenter.getStops(lat,lon)
+        //presenter.requestStops(lat,lon)
         // presenter.getDepartures()
         // presenter.getComplexData(lat,lon)
 
@@ -53,7 +50,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         if (ContextCompat.checkSelfPermission(this@MainActivity,
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            fusedLocationClient =
+            val fusedLocationClient =
                 LocationServices.getFusedLocationProviderClient(this@MainActivity)
             fusedLocationClient.lastLocation
 
@@ -127,10 +124,10 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             // TODO: 2020.09.15. filters to put to another class 
-            //val allStops = presenter.stops
+            val allStops = presenter.stops
             val filtered = presenter.filterNearByStops(550)
-            adapter = MainAdapter(filtered)
-            testText.text = filtered.size.toString()
+            adapter = MainAdapter(allStops)
+            testText.text = allStops.size.toString()
             adapter = adapter
         }
     }

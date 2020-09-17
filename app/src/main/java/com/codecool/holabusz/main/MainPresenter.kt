@@ -36,11 +36,11 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
 
-    fun getStopObservable(): Single<StopResponse> {
+    fun getStopObservable(currLat: Float, currLon: Float): Single<StopResponse> {
         return requestApi.getStopsForLocation(
             key = "apaiary-test",
-            lon = 47.477900,
-            lat = 19.045807,
+            lat = currLat.toDouble(),
+            lon = currLon.toDouble(),
             radius = 100
         )
 
@@ -117,6 +117,43 @@ class MainPresenter() : MainContract.MainPresenter {
 
                 }
             })
+    }
+
+    fun getStops(currLat: Float, currLon: Float) {
+
+        var result = getStopObservable(currLat,currLon)
+            .subscribe( {
+                stopResponse ->
+                val responseData: StopListResponse = stopResponse.data
+                val stopsData: List<Stop> = responseData.list
+
+                stops = stopsData.map {
+                    Stop(
+                        it.id,
+                        it.name,
+                        it.direction,
+                        it.lat,
+                        it.lon,
+                        meterDistanceBetweenPoints(currLat, currLon, it.lat, it.lon)
+                    )
+                }.toMutableList()
+
+                try {
+                    view?.hideLoading()
+                    view?.setAdapter()
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+
+            },
+
+                { e ->
+                    Log.d(TAG, e.stackTraceToString())
+                    view?.hideLoading()
+
+                })
     }
 
     fun getDepartures() {

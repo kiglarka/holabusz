@@ -33,8 +33,8 @@ interface RequestApi {
     )
     fun getStopsForLocation(
         @Query("key") key: String,
-        @Query("lon") lon: Double,
         @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
         @Query("radius") radius : Int
     ): Single<StopResponse>
 
