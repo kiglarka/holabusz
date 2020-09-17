@@ -23,6 +23,7 @@ interface MainContract {
         fun onDetach()
         val requestApi: RequestApi
         fun filterNearByStops(meters: Int): List<Stop>
+        fun getNearestStopId(): String?
     }
 
 }

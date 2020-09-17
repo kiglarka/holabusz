@@ -41,10 +41,10 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onResume() {
         super.onResume()
         checkPermission()
-        presenter.getStops(47.516064.toFloat(),19.056467.toFloat())
-        // presenter.requestStops(lat,lon)
-        // presenter.getDepartures()
-        // presenter.getComplexData(lat,lon)
+        //presenter.getStops(47.516064.toFloat(),19.056467.toFloat())
+
+        presenter.getDepartures()
+        //presenter.getComplexData(47.516064.toFloat(),19.056467.toFloat())
 
     }
 

@@ -1,14 +1,14 @@
 package com.codecool.holabusz.main
 
 import android.util.Log
+import androidx.core.text.htmlEncode
 import com.codecool.holabusz.model.*
 import com.codecool.holabusz.network.RequestApi
 import com.codecool.holabusz.network.RetrofitClient
-import io.reactivex.Observer
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import okio.ByteString.Companion.encodeUtf8
 import kotlin.math.acos
 
 class MainPresenter() : MainContract.MainPresenter {
@@ -48,10 +48,11 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
     fun getDepartureObservable(): Single<DepartureResponse> {
+
+        val stopIdValue = listOf("BKK_F00412", "BKK_F02461").joinToString("&stopId=")
+        Log.d(TAG, "stopId: $stopIdValue")
         return requestApi.getArrivalsAndDeparturesForStop(
-            key = "apaiary-test", stopId = listOf("BKK_F00412").joinToString(
-                "&stopId="
-            ), limit = 60
+            key = "apaiary-test", stopId = stopIdValue, limit = 60
         )
 
             .subscribeOn(Schedulers.io())
@@ -178,7 +179,6 @@ class MainPresenter() : MainContract.MainPresenter {
 
     fun getComplexData(currLat: Float, currLon: Float) {
 
-
         val observableFirst = requestApi.getStopsForLocation(
             key = "apaiary-test",
             lon = currLon,
@@ -208,21 +208,29 @@ class MainPresenter() : MainContract.MainPresenter {
                     )
                 }.toMutableList()
 
+
+
                 requestApi.getArrivalsAndDeparturesForStop(
                     key = "apaiary-test", stopId = stops.map { it.id }.joinToString(
-                        "&stopId="
+                        "%26stopId="
                     ), limit = 60
                 )
+
+
             }
+
+
 
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
             .subscribe(
-                {
+                {departureResponse ->
+
                     try {
                         view?.hideLoading()
-                        view?.setAdapter(filterNearByStops(250))
+                        //view?.setAdapter(filterNearByStops(250))
+                        view?.setAdapterWithData(departures)
 
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -271,6 +279,10 @@ class MainPresenter() : MainContract.MainPresenter {
 
     override fun filterNearByStops(meters: Int): List<Stop> {
         return stops.filter { it.distance.toInt() <= meters }
+    }
+
+    override fun getNearestStopId(): String? {
+        return stops.minByOrNull { it.distance }?.id
     }
 
 
