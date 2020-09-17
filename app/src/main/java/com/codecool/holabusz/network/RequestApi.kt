@@ -33,9 +33,9 @@ interface RequestApi {
     )
     fun getStopsForLocation(
         @Query("key") key: String,
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
-        @Query("radius") radius : Int
+        @Query("lat") lat: Float,
+        @Query("lon") lon: Float,
+        @Query("radius") radius: Int
     ): Single<StopResponse>
 
     /*

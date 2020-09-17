@@ -4,7 +4,6 @@ import android.util.Log
 import com.codecool.holabusz.model.*
 import com.codecool.holabusz.network.RequestApi
 import com.codecool.holabusz.network.RetrofitClient
-import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,8 +23,8 @@ class MainPresenter() : MainContract.MainPresenter {
 
     private var view: MainContract.MainView? = null
 
-    private var lat: Double = 0.0
-    private var lon: Double = 0.0
+    private var lat: Float = 0.0F
+    private var lon: Float = 0.0F
 
     override fun onAttach(view: MainContract.MainView) {
         this.view = view
@@ -39,8 +38,8 @@ class MainPresenter() : MainContract.MainPresenter {
     fun getStopObservable(currLat: Float, currLon: Float): Single<StopResponse> {
         return requestApi.getStopsForLocation(
             key = "apaiary-test",
-            lat = currLat.toDouble(),
-            lon = currLon.toDouble(),
+            lat = currLat,
+            lon = currLon,
             radius = 100
         )
 
@@ -60,68 +59,13 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
 
-    fun requestStops(currLat: Float, currLon: Float) {
+    fun getStops(lat: Float, lon: Float) {
 
-        val stopSingle: Single<StopResponse> =
-            requestApi.getStopsForLocation(
-                key = "apaiary-test",
-                lon = currLat.toDouble(),
-                lat = currLon.toDouble(),
-                radius = 100
-            )
+        Log.d(TAG, "getStops: currlat $lat")
+        Log.d(TAG, "getStops: currlon $lon")
 
 
-        stopSingle
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .toObservable()
-            .subscribe(object : Observer<StopResponse?> {
-
-                override fun onSubscribe(d: Disposable) {
-                    Log.d(TAG, "onSubscribe: subscribed OK")
-                }
-
-                override fun onError(e: Throwable) {
-                    Log.d(TAG, e.stackTraceToString())
-                }
-
-                override fun onComplete() {
-                    try {
-                        view?.hideLoading()
-                        view?.setAdapter(stops)
-
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-
-                override fun onNext(stopResponse: StopResponse) {
-                    val responseData: StopListResponse = stopResponse.data
-                    val stopsData: List<Stop> = responseData.list
-
-                    stops = stopsData.map {
-                        Stop(
-                            it.id,
-                            it.name,
-                            it.direction,
-                            it.lat,
-                            it.lon,
-                            meterDistanceBetweenPoints(
-                                currLat,
-                                currLon,
-                                it.lat.toFloat(),
-                                it.lon.toFloat()
-                            )
-                        )
-                    }.toMutableList()
-
-                }
-            })
-    }
-
-    fun getStops(currLat: Float, currLon: Float) {
-
-        var result = getStopObservable(currLat,currLon)
+        var result = getStopObservable(lat,lon)
             .subscribe( {
                 stopResponse ->
                 val responseData: StopListResponse = stopResponse.data
@@ -134,13 +78,13 @@ class MainPresenter() : MainContract.MainPresenter {
                         it.direction,
                         it.lat,
                         it.lon,
-                        meterDistanceBetweenPoints(currLat, currLon, it.lat.toFloat(), it.lon.toFloat())
+                        meterDistanceBetweenPoints(lat, lon, it.lat, it.lon).toDouble()
                     )
                 }.toMutableList()
 
                 try {
                     view?.hideLoading()
-                    view?.setAdapter(stops)
+                    view?.setAdapter(filterNearByStops(250))
 
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -155,6 +99,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
                 })
     }
+
 
     fun getDepartures() {
 
@@ -236,8 +181,8 @@ class MainPresenter() : MainContract.MainPresenter {
 
         val observableFirst = requestApi.getStopsForLocation(
             key = "apaiary-test",
-            lon = 47.477900,
-            lat = 19.045807,
+            lon = currLon,
+            lat = currLat,
             radius = 100
         )
 
@@ -277,7 +222,7 @@ class MainPresenter() : MainContract.MainPresenter {
                 {
                     try {
                         view?.hideLoading()
-                        view?.setAdapter(stops)
+                        view?.setAdapter(filterNearByStops(250))
 
                     } catch (e: Exception) {
                         e.printStackTrace()

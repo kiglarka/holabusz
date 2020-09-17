@@ -30,7 +30,7 @@ class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<Recycler
 
 
             nameView.text = stop.name
-            distanceView.text = stop.distance.toString()
+            distanceView.text = stop.distance.toInt().toString() + " m"
 
         }
     }

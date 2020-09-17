@@ -19,6 +19,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     private lateinit var presenter: MainPresenter
 
     private var lat : Float = 0.0F
@@ -27,8 +29,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         getSupportActionBar()?.hide()
-        checkPermission()
         showLoading()
 
         presenter = MainPresenter()
@@ -38,9 +40,9 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun onResume() {
         super.onResume()
-
-        presenter.getStops(lat,lon)
-        //presenter.requestStops(lat,lon)
+        checkPermission()
+        presenter.getStops(47.516064.toFloat(),19.056467.toFloat())
+        // presenter.requestStops(lat,lon)
         // presenter.getDepartures()
         // presenter.getComplexData(lat,lon)
 
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         if (ContextCompat.checkSelfPermission(this@MainActivity,
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            val fusedLocationClient =
+            fusedLocationClient =
                 LocationServices.getFusedLocationProviderClient(this@MainActivity)
             fusedLocationClient.lastLocation
 

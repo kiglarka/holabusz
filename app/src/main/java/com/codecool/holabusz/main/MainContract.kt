@@ -22,7 +22,6 @@ interface MainContract {
         fun onAttach(view: MainContract.MainView)
         fun onDetach()
         val requestApi: RequestApi
-        //fun requestStops()
         fun filterNearByStops(meters: Int): List<Stop>
     }
 
