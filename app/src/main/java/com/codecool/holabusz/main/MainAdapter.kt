@@ -20,7 +20,7 @@ class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<Recycler
         val minutes = itemView.minutes
          */
 
-        val nameView = itemView.textView1
+        val nameView = itemView.stopNameView
         val distanceView = itemView.textView2
 
         fun bind(stop : Stop) {
