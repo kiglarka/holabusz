@@ -88,7 +88,7 @@ class MainPresenter() : MainContract.MainPresenter {
                 override fun onComplete() {
                     try {
                         view?.hideLoading()
-                        view?.setAdapter()
+                        view?.setAdapter(stops)
 
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -140,7 +140,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
                 try {
                     view?.hideLoading()
-                    view?.setAdapter()
+                    view?.setAdapter(stops)
 
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -277,7 +277,7 @@ class MainPresenter() : MainContract.MainPresenter {
                 {
                     try {
                         view?.hideLoading()
-                        view?.setAdapter()
+                        view?.setAdapter(stops)
 
                     } catch (e: Exception) {
                         e.printStackTrace()

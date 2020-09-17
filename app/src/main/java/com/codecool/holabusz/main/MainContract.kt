@@ -13,7 +13,7 @@ interface MainContract {
         fun showLoading()
         fun hideLoading()
         fun checkPermission()
-        fun setAdapter()
+        fun setAdapter(data: List<Stop>)
         fun setAdapterWithData(data: List<Departure>)
     }
 
