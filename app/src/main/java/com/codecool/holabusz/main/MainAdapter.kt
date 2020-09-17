@@ -21,6 +21,7 @@ class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<Recycler
          */
 
         val nameView = itemView.textView1
+        val distanceView = itemView.textView2
 
         fun bind(stop : Stop) {
             // vehicleImage.setimage = vehicle.image
@@ -28,7 +29,9 @@ class MainAdapter(private val stops: List<Stop>) : RecyclerView.Adapter<Recycler
             // minures = vehicle.minute
 
 
-            nameView.text = stop.toString()
+            nameView.text = stop.name
+            distanceView.text = stop.distance.toString()
+
         }
     }
 

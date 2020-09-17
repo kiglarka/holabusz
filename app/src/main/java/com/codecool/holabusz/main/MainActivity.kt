@@ -125,9 +125,9 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             layoutManager = LinearLayoutManager(this@MainActivity)
             // TODO: 2020.09.15. filters to put to another class 
             val allStops = presenter.stops
-            val filtered = presenter.filterNearByStops(550)
+            val filtered = presenter.filterNearByStops(500)
             adapter = MainAdapter(allStops)
-            testText.text = allStops.size.toString()
+            testText.text = filtered.size.toString()
             adapter = adapter
         }
     }

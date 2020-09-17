@@ -109,8 +109,8 @@ class MainPresenter() : MainContract.MainPresenter {
                             meterDistanceBetweenPoints(
                                 currLat,
                                 currLon,
-                                it.lat,
-                                it.lon
+                                it.lat.toFloat(),
+                                it.lon.toFloat()
                             )
                         )
                     }.toMutableList()
@@ -134,7 +134,7 @@ class MainPresenter() : MainContract.MainPresenter {
                         it.direction,
                         it.lat,
                         it.lon,
-                        meterDistanceBetweenPoints(currLat, currLon, it.lat, it.lon)
+                        meterDistanceBetweenPoints(currLat, currLon, it.lat.toFloat(), it.lon.toFloat())
                     )
                 }.toMutableList()
 
@@ -325,7 +325,7 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
     override fun filterNearByStops(meters: Int): List<Stop> {
-        return stops.filter { it.distance <= meters }
+        return stops.filter { it.distance.toInt() <= meters }
     }
 
 
