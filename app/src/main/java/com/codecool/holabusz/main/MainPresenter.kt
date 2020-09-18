@@ -61,7 +61,7 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
 
-    override fun getStops(lat: Float, lon: Float) {
+    fun getStops(lat: Float, lon: Float) {
 
         Log.d(TAG, "getStops: currlat $lat")
         Log.d(TAG, "getStops: currlon $lon")
@@ -102,12 +102,7 @@ class MainPresenter() : MainContract.MainPresenter {
                 })
     }
 
-    fun getStopName(stops: List<Stop>, stopId: String) : String {
-        return stops.filter{ it.id == stopId}.map { it.name }.joinToString()
-    }
-
-
-    override fun getDepartures() {
+    fun getDepartures() {
 
         var result2 = getDepartureObservable()
             .subscribe(
@@ -115,8 +110,6 @@ class MainPresenter() : MainContract.MainPresenter {
                     val responseData: DepartureListResponse = departureResponse.data
                     val departureData: StopTime = responseData.entry
                     val stopTime: List<Departure> = departureData.stopTimes
-
-
 
                     try {
                         view?.hideLoading()
@@ -173,9 +166,21 @@ class MainPresenter() : MainContract.MainPresenter {
          */
     }
 
+    private fun getStopName(stops: List<Stop>, stopId: String) : String {
+        return stops.filter{ it.id == stopId}.map { it.name }.joinToString()
+    }
+
+    private fun getRouteId(trips: List<Trip>, tripId: String): String {
+        return trips.filter { it.id == tripId }.map { it.routeId }.joinToString()
+    }
+
+    private fun getCorrespondentRoute(routes: List<Routes>, routeId: String) : Routes {
+        return routes.first { it.id == routeId }
+    }
 
     override fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int) {
 
+        view?.showLoading()
         val stopObservable = getStopObservable(currLat,currLon)
 
         var result = stopObservable
@@ -217,10 +222,32 @@ class MainPresenter() : MainContract.MainPresenter {
 
             .subscribe(
                 { departureResponse ->
-
+                    // from departureResponse to stopTime
                     val responseData: DepartureListResponse = departureResponse.data
                     val departureData: StopTime = responseData.entry
                     val stopTime: List<Departure> = departureData.stopTimes
+
+                    val references = responseData.references
+
+
+                    val trips =
+                    responseData.references.trips.map {
+                        it.value
+                        Trip (
+                            it.value.id,
+                            it.value.routeId
+                        )
+                    }
+
+
+                    val routes =
+                        responseData.references.routes.map {
+                            Routes (
+                                it.value.id,
+                                it.value.shortName,
+                                it.value.color
+                            )
+                        }
 
 
 
@@ -231,8 +258,12 @@ class MainPresenter() : MainContract.MainPresenter {
                             it.stopHeadsign,
                             it.departureTime,
                             it.tripId,
-                        )
+                            getRouteId(trips,it.tripId),
+                            getCorrespondentRoute(routes, getRouteId(trips,it.tripId)).shortName,
+                            "#"+ getCorrespondentRoute(routes, getRouteId(trips,it.tripId)).color
 
+
+                        )
                     }.toMutableList()
 
                     try {

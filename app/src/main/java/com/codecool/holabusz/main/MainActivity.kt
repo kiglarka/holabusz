@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -34,6 +36,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         presenter = MainPresenter()
         presenter.onAttach(this)
 
+        setSeekBarAction()
+
         presenter.firstRun()
         //checkPermission()
 
@@ -49,8 +53,31 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         // presenter.getStops(lat.toFloat(),lon.toFloat())
         // presenter.getDepartures()
 
-        presenter.getComplexData(lat.toFloat(),lon.toFloat(), 500)
+        presenter.getComplexData(lat.toFloat(),lon.toFloat(), 250)
 
+    }
+
+    override fun setSeekBarAction() {
+        seekBar.progress = 250
+        testText.text = seekBar.progress.toString()
+
+
+        seekBar.setOnSeekBarChangeListener(object: OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                testText.text = progress.toString()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                val maxDistance = seekBar?.progress
+                presenter.getComplexData(lat.toFloat(),lon.toFloat(), 1000)
+
+
+            }
+
+        })
     }
 
 
@@ -119,28 +146,20 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun setAdapterWithData(data : List<Departure>){
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            // TODO: 2020.09.15. filters to put to another class
             adapter = DepartureAdapter(data)
-            testText.text = data.size.toString()
             adapter = adapter
         }
     }
 
-
-
     override fun setAdapter(data : List<Stop>){
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            // TODO: 2020.09.15. filters to put to another class 
-            //val allStops = presenter.stops
-            //val filtered = presenter.filterNearByStops(500)
+            // TODO: 2020.09.15. filters to put to another class
             adapter = MainAdapter(data)
             testText.text = data.size.toString()
             adapter = adapter
         }
     }
-
-
 
     override fun showLoading() {
         progressBar.visibility = View.VISIBLE

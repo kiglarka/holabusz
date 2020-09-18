@@ -16,6 +16,7 @@ interface MainContract {
         fun setAdapter(data: List<Stop>)
         fun setAdapterWithData(data: List<Departure>)
         fun hideAppBar()
+        fun setSeekBarAction()
     }
 
     interface MainPresenter {
@@ -26,8 +27,6 @@ interface MainContract {
         val requestApi: RequestApi
         fun filterNearByStops(meters: Int): List<Stop>
         fun getNearestStopId(): String?
-        fun getStops(lat: Float, lon: Float)
-        fun getDepartures()
         fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int)
     }
 

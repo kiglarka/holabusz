@@ -1,5 +1,7 @@
 package com.codecool.holabusz.main
 
+import android.graphics.Color
+import android.provider.CalendarContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,20 +17,16 @@ class DepartureAdapter(private val departures: List<Departure>) : RecyclerView.A
     class DepartureViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // TODO: 2020.09.01. itemview.idName would refer to the view
 
-        /*
-        val vehicleImage : Image = itemView.vehicleImage
-        val vehicleShortName : String = itemView.vehicleShortName
-        val minutes = itemView.minutes
-         */
-
+        val shortNameView = itemView.shortNameView
         val stopNameView = itemView.stopNameView
         val headerView = itemView.HeaderView
         val minuteView = itemView.textView2
 
         fun bind(departure: Departure) {
-            // vehicleImage.setimage = vehicle.image
-            // vehicleShortName.text = vehicle.shortName
-            // minures = vehicle.minute
+
+
+            shortNameView.text = departure.shortName
+            shortNameView.setTextColor(Color.parseColor(departure.color))
 
             headerView.text = "► " + departure.stopHeadsign
             stopNameView.text = "@ " + departure.stopName

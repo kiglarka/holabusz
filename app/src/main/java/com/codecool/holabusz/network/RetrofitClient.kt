@@ -17,7 +17,7 @@ class RetrofitClient {
         fun getClient(): Retrofit {
 
             val interceptor = HttpLoggingInterceptor()
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+            interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
 
             val okhttpClient =
                 OkHttpClient().newBuilder()
