@@ -59,12 +59,12 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun setSeekBarAction() {
         seekBar.progress = 250
-        testText.text = seekBar.progress.toString()
+        testText.text = seekBar.progress.toString() + " m"
 
 
         seekBar.setOnSeekBarChangeListener(object: OnSeekBarChangeListener{
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                testText.text = progress.toString()
+                testText.text = progress.toString() + " m"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 val maxDistance = seekBar?.progress
-                presenter.getComplexData(lat.toFloat(),lon.toFloat(), 1000)
+                presenter.getComplexData(lat.toFloat(),lon.toFloat(), maxDistance!!)
 
 
             }

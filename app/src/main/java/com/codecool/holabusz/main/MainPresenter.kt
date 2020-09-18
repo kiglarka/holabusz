@@ -34,6 +34,7 @@ class MainPresenter() : MainContract.MainPresenter {
     override fun firstRun() {
         view?.hideAppBar()
         view?.showLoading()
+        view?.checkPermission()
     }
 
 

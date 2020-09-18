@@ -3,5 +3,5 @@
     <dimen name="string_size">15sp</dimen>
     <dimen name="corner_radius">5dp</dimen>
     <dimen name="padding_mini">5dp</dimen>
-    <dimen name="textSize_large">16sp</dimen>
+    <dimen name="textSize_large">25sp</dimen>
 </resources>
