@@ -29,9 +29,6 @@ data class DepartureRefRouteResponse(val routes : List<Routes>)
  */
 
 
-
-
-
 data class Departure(
     val stopId: String,
     val stopName: String,

@@ -24,22 +24,33 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    val departureAdapter = DepartureAdapter(arrayListOf())
     private lateinit var presenter: MainPresenter
 
     private var lat : Double = 47.516064
     private var lon : Double = 19.056467
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         presenter = MainPresenter()
         presenter.onAttach(this)
 
+        hideAppBar()
+
         setSeekBarAction()
 
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            //adapter = DepartureAdapter(arrayListOf())
+            this.adapter = departureAdapter
+
+        }
+
         presenter.firstRun()
-        //checkPermission()
+
 
     }
 
@@ -52,8 +63,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
         // presenter.getStops(lat.toFloat(),lon.toFloat())
         // presenter.getDepartures()
-
-        presenter.getComplexData(lat.toFloat(),lon.toFloat(), 250)
 
     }
 
@@ -71,8 +80,9 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                val maxDistance = seekBar?.progress
-                presenter.getComplexData(lat.toFloat(),lon.toFloat(), maxDistance!!)
+                val maxDistance = seekBar?.progress?.let{
+                    presenter.getComplexData(lat.toFloat(),lon.toFloat(), it)
+                }
 
 
             }
@@ -89,12 +99,14 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
                 LocationServices.getFusedLocationProviderClient(this@MainActivity)
             fusedLocationClient.lastLocation
 
+                    //to observable!!!
+
                 .addOnSuccessListener { location ->
                     if (location != null) {
-                        lat = location.latitude
-                        lon = location.longitude
-                        Log.d(TAG, "onRequestPermissionsResult: $lat")
-                        Log.d(TAG, "onRequestPermissionsResult: $lon")
+                        Log.d(TAG, "onRequestPermissionsResult: ${location.latitude}")
+                        Log.d(TAG, "onRequestPermissionsResult: ${location.longitude}")
+                        presenter.getComplexData(location.latitude.toFloat(),location.longitude.toFloat(),250)
+
                     } else {
                         Log.d(
                             TAG,
@@ -144,11 +156,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     }
 
     override fun setAdapterWithData(data : List<Departure>){
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = DepartureAdapter(data)
-            adapter = adapter
-        }
+        departureAdapter.setDepartures(data)
     }
 
     override fun setAdapter(data : List<Stop>){

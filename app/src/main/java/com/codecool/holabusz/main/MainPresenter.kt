@@ -32,7 +32,6 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
     override fun firstRun() {
-        view?.hideAppBar()
         view?.showLoading()
         view?.checkPermission()
     }
@@ -270,6 +269,7 @@ class MainPresenter() : MainContract.MainPresenter {
                     try {
                         view?.hideLoading()
                         //view?.setAdapter(filterNearByStops(250))
+
                         view?.setAdapterWithData(departures)
 
                     } catch (e: Exception) {

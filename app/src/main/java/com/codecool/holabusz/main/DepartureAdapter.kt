@@ -12,7 +12,13 @@ import com.codecool.holabusz.model.Stop
 import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.row_item.view.*
 
-class DepartureAdapter(private val departures: List<Departure>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DepartureAdapter(private val departures: ArrayList<Departure>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    public fun setDepartures(departures: List<Departure>) {
+        this.departures.clear()
+        this.departures.addAll(departures)
+        //this.departures = departures
+    }
 
     class DepartureViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // TODO: 2020.09.01. itemview.idName would refer to the view
