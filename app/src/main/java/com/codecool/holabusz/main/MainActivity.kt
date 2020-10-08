@@ -1,9 +1,11 @@
 package com.codecool.holabusz.main
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -15,10 +17,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.codecool.holabusz.R
 import com.codecool.holabusz.model.Departure
 import com.codecool.holabusz.model.Stop
+import com.codecool.holabusz.util.Constants
+import com.codecool.holabusz.util.LocationService
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
 
@@ -40,8 +42,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
         hideAppBar()
 
-        setSeekBarAction()
-
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             //adapter = DepartureAdapter(arrayListOf())
@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
         presenter.firstRun()
 
-
     }
 
     override fun hideAppBar() {
@@ -60,10 +59,46 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun onResume() {
         super.onResume()
+        setSeekBarAction()
 
         // presenter.getStops(lat.toFloat(),lon.toFloat())
         // presenter.getDepartures()
 
+    }
+
+    private fun isLocationServiceRunning(): Boolean{
+        val activityManager : ActivityManager? =
+            getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+        if (activityManager != null){
+            for (service in activityManager.getRunningServices(Int.MAX_VALUE)){
+                if (LocationService::class.java.name.equals(service.service.className)){
+                    if(service.foreground){
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+        return false
+    }
+
+    private fun startLocationService(){
+        if (!isLocationServiceRunning()){
+            val intent = Intent(applicationContext,LocationService::class.java)
+            intent.setAction(Constants.ACTION_START_LOCATION_SERVICE)
+            startService(intent)
+            Toast.makeText(this,"Location Service Started", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun stopLocationService(){
+        if (isLocationServiceRunning()){
+            val intent = Intent(applicationContext,LocationService::class.java)
+            intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE)
+            startService(intent)
+            Toast.makeText(this,"Location Service Stopped", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun setSeekBarAction() {
@@ -95,6 +130,9 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         if (ContextCompat.checkSelfPermission(this@MainActivity,
             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
+            startLocationService()
+
+            /*
             fusedLocationClient =
                 LocationServices.getFusedLocationProviderClient(this@MainActivity)
             fusedLocationClient.lastLocation
@@ -115,6 +153,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
                         Toast.makeText(this,"No location detected",Toast.LENGTH_LONG).show()
                     }
                 }
+
+             */
         }
 
 
@@ -180,6 +220,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     companion object {
         private const val TAG = "MainActivity"
+        private const val REQUEST_CODE_LOCATION_PERMISSION = 1
     }
 
 }
