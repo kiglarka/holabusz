@@ -1,18 +1,15 @@
 package com.codecool.holabusz.main
 
 import android.graphics.Color
-import android.provider.CalendarContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.codecool.holabusz.R
 import com.codecool.holabusz.model.Departure
-import com.codecool.holabusz.model.Stop
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.row_item.view.*
 
-class DepartureAdapter(private val departures: ArrayList<Departure>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DepartureAdapter(private var departures: ArrayList<Departure>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     public fun setDepartures(departures: List<Departure>) {
         this.departures.clear()

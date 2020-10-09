@@ -20,13 +20,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codecool.holabusz.R
 import com.codecool.holabusz.model.Departure
-import com.codecool.holabusz.model.Location
 import com.codecool.holabusz.util.Constants
 import com.codecool.holabusz.util.LocationService
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
+
+    data class Location(var lat: Double = 0.0, var lon: Double = 0.0)
 
     private var location = Variable(Location(0.0,0.0))
 
@@ -153,10 +154,10 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                /*
+
                 val maxDistance = seekBar?.progress?.let {
-                    lat?.toFloat()?.let { it1 ->
-                        lon?.toFloat()?.let { it2 ->
+                    location.value.lat?.toFloat()?.let { it1 ->
+                        location.value.lon?.toFloat()?.let { it2 ->
                             presenter.getComplexData(
                                 it1,
                                 it2, it
@@ -164,9 +165,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
                         }
                     }
                 }
-
-                 */
-
 
             }
 
@@ -180,34 +178,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-
             startLocationService()
 
-
-
-            /*
-            fusedLocationClient =
-                LocationServices.getFusedLocationProviderClient(this@MainActivity)
-            fusedLocationClient.lastLocation
-
-                    //to observable!!!
-
-                .addOnSuccessListener { location ->
-                    if (location != null) {
-                        Log.d(TAG, "onRequestPermissionsResult: ${location.latitude}")
-                        Log.d(TAG, "onRequestPermissionsResult: ${location.longitude}")
-                        presenter.getComplexData(location.latitude.toFloat(),location.longitude.toFloat(),250)
-
-                    } else {
-                        Log.d(
-                            TAG,
-                            "onRequestPermissionsResult: nincs location!!! $location"
-                        )
-                        Toast.makeText(this,"No location detected",Toast.LENGTH_LONG).show()
-                    }
-                }
-
-             */
         } else if (ContextCompat.checkSelfPermission(
                 this@MainActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -259,20 +231,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun setAdapterWithData(data: List<Departure>) {
         departureAdapter.setDepartures(data)
-    }
 
-    /*
-    override fun setAdapter(data: List<Stop>) {
-        recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            // TODO: 2020.09.15. filters to put to another class
-            adapter = MainAdapter(data)
-            testText.text = data.size.toString()
-            adapter = adapter
-        }
     }
-
-     */
 
     override fun showLoading() {
         progressBar.visibility = View.VISIBLE
