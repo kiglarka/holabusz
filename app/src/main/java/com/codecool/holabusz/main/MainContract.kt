@@ -13,7 +13,6 @@ interface MainContract {
         fun showLoading()
         fun hideLoading()
         fun checkPermission()
-        fun setAdapter(data: List<Stop>)
         fun setAdapterWithData(data: List<Departure>)
         fun hideAppBar()
         fun setSeekBarAction()

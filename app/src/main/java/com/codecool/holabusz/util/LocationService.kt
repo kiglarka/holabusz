@@ -1,9 +1,7 @@
 package com.codecool.holabusz.util
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.annotation.SuppressLint
+import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -11,6 +9,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.codecool.holabusz.R
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -24,17 +23,33 @@ class LocationService : Service() {
         override fun onLocationResult(locationResult: LocationResult?) {
             super.onLocationResult(locationResult)
             if (locationResult != null && locationResult.lastLocation != null){
+                Log.d(Companion.TAG, "onLocationResult: DONE")
+                Log.d(Companion.TAG, "${locationResult.lastLocation.latitude}")
+                Log.d(Companion.TAG, "${locationResult.lastLocation.longitude}")
                 var latitude : Double = locationResult.lastLocation.latitude
                 var longtitude : Double = locationResult.lastLocation.longitude
-                Log.d("Location", latitude.toString() + ","+ longtitude.toString())
+                Log.d("Location", latitude.toString() + "," + longtitude.toString())
+                sendLocationToActivity(latitude,longtitude)
             }
         }
+
+
+    }
+
+    private fun sendLocationToActivity(lat:Double, lon:Double){
+        Log.d(TAG, "sendLocationToActivity: $lat, $lon")
+        val sendLocationIntent = Intent("LocationUpdate")
+        sendLocationIntent.putExtra("LAT", lat)
+        sendLocationIntent.putExtra("LON", lon)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(sendLocationIntent)
+        //sendBroadcast(sendLocationIntent)
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         throw UnsupportedOperationException("Not yet implemented")
     }
 
+    @SuppressLint("MissingPermission")
     private fun startLocationService(){
         val channelId = "location_notification_channel"
         val notificationManager : NotificationManager? = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -71,8 +86,8 @@ class LocationService : Service() {
         }
 
         val locationRequest : LocationRequest = LocationRequest()
-        locationRequest.setInterval(4000)
-        locationRequest.setFastestInterval(2000)
+        locationRequest.setInterval(10000)
+        locationRequest.setFastestInterval(8000)
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
         // permission?
@@ -100,6 +115,10 @@ class LocationService : Service() {
         }
         return super.onStartCommand(intent, flags, startId)
 
+    }
+
+    companion object {
+        private const val TAG = "LocationService"
     }
 
 }

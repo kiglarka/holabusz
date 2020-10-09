@@ -14,7 +14,7 @@ import kotlin.math.acos
 class MainPresenter() : MainContract.MainPresenter {
 
     var stops: MutableList<Stop> = mutableListOf()
-    var departures: MutableList<Departure> = mutableListOf()
+    //var departures: MutableList<Departure> = mutableListOf()
 
     override val requestApi: RequestApi
         get() {
@@ -60,7 +60,7 @@ class MainPresenter() : MainContract.MainPresenter {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-
+/*
     fun getStops(lat: Float, lon: Float) {
 
         Log.d(TAG, "getStops: currlat $lat")
@@ -102,6 +102,9 @@ class MainPresenter() : MainContract.MainPresenter {
                 })
     }
 
+ */
+
+/*
     fun getDepartures() {
 
         var result2 = getDepartureObservable()
@@ -166,6 +169,8 @@ class MainPresenter() : MainContract.MainPresenter {
          */
     }
 
+ */
+
     private fun getStopName(stops: List<Stop>, stopId: String) : String {
         return stops.filter{ it.id == stopId}.map { it.name }.joinToString()
     }
@@ -179,7 +184,7 @@ class MainPresenter() : MainContract.MainPresenter {
     }
 
     override fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int) {
-
+        Log.d(TAG, "getComplexData: started")
         view?.showLoading()
         val stopObservable = getStopObservable(currLat,currLon)
 
@@ -251,7 +256,7 @@ class MainPresenter() : MainContract.MainPresenter {
 
 
 
-                    departures = stopTime.map {
+                    var departures = stopTime.map {
                         Departure(
                             it.stopId,
                             getStopName(stops,it.stopId),
