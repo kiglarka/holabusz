@@ -27,11 +27,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
 
-    data class Location(var lat: Double = 0.0, var lon: Double = 0.0)
+    data class Location(var lat: Double?, var lon: Double?)
 
-    private var location = Variable(Location(0.0,0.0))
+    private var location = Variable(Location(0.0 ,0.0))
+    private var maxDistance = 250
 
-    inner class Variable<T>(private val defaultValue: T) {
+    class Variable<T>(private val defaultValue: T) {
         var value: T = defaultValue
             set(value) {
                 field = value
@@ -40,17 +41,15 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         val observable = BehaviorSubject.createDefault(value)
     }
 
-
     private var locationReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-
         override fun onReceive(context: Context?, intent: Intent?) {
             // get extra data from intent
-
-            var lat = intent?.getDoubleExtra("LAT", 47.493414)
-            var lon = intent?.getDoubleExtra("LON", 19.017302)
-            if (lat != location.value.lat && lon != location.value.lon) location.value = Location(lat!!,lon!!)
-
-            Log.d(TAG, "onReceive: $lat,$lon")
+            val lat = intent?.getDoubleExtra("LAT", 47.493414)
+            val lon = intent?.getDoubleExtra("LON", 19.017302)
+            if (lat != location.value.lat
+                && lon != location.value.lon
+            )
+                location.value = Location(lat, lon)
         }
     }
 
@@ -58,7 +57,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     private lateinit var presenter: MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -69,13 +67,10 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            //adapter = DepartureAdapter(arrayListOf())
+            //this.adapter = DepartureAdapter(arrayListOf())
             this.adapter = departureAdapter
-
         }
-
         presenter.firstRun()
-
     }
 
 
@@ -84,11 +79,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     }
 
     override fun onResume() {
-
-        location.observable.subscribe{
-            Log.d(TAG, "location changed:${location.value.lat}, ${location.value.lon}")
-            presenter.getComplexData(location.value.lat.toFloat(),location.value.lon.toFloat(),250)
-        }
         LocalBroadcastManager.getInstance(this).registerReceiver(
             locationReceiver,
             IntentFilter("LocationUpdate")
@@ -97,6 +87,18 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         super.onResume()
         setSeekBarAction()
 
+        location.observable.subscribe {
+            val currLat = location.value.lat
+            val currLon = location.value.lon
+            Log.d(TAG, "location changed:${location.value.lat}, ${location.value.lon}")
+            if (currLat != 0.0 && currLon != 0.0) currLat?.toFloat()?.let { it1 ->
+                currLon?.toFloat()?.let { it2 ->
+                    presenter.getComplexData(
+                        it1, it2,maxDistance)
+                }
+            }
+
+        }
     }
 
     override fun onPause() {
@@ -140,10 +142,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     }
 
     override fun setSeekBarAction() {
-        seekBar.progress = 250
+        seekBar.progress = maxDistance
         testText.text = seekBar.progress.toString() + " m"
-        //lat?.toFloat()?.let { lon?.toFloat()?.let { it1 -> presenter.getComplexData(it, it1,250) } }
-
 
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -154,21 +154,21 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-
-                val maxDistance = seekBar?.progress?.let {
-                    location.value.lat?.toFloat()?.let { it1 ->
-                        location.value.lon?.toFloat()?.let { it2 ->
-                            presenter.getComplexData(
-                                it1,
-                                it2, it
-                            )
-                        }
+                maxDistance = seekBar?.progress ?: 250
+                location.value.lat?.toFloat()?.let {
+                    location.value.lon?.toFloat()?.let { it1 ->
+                        presenter.getComplexData(
+                            it,
+                            it1, maxDistance
+                        )
                     }
                 }
-
             }
-
         })
+    }
+
+    override fun makeToast(string: String){
+        Toast.makeText(this,string,Toast.LENGTH_LONG).show()
     }
 
 
@@ -231,16 +231,16 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun setAdapterWithData(data: List<Departure>) {
         departureAdapter.setDepartures(data)
-
     }
 
     override fun showLoading() {
         progressBar.visibility = View.VISIBLE
+        Thread.sleep(1000)
     }
 
     override fun hideLoading() {
         Thread.sleep(1000)
-        progressBar.visibility = View.GONE
+        progressBar.visibility = View.INVISIBLE
     }
 
     companion object {

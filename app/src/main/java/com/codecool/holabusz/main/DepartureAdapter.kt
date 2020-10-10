@@ -9,12 +9,11 @@ import com.codecool.holabusz.R
 import com.codecool.holabusz.model.Departure
 import kotlinx.android.synthetic.main.row_item.view.*
 
-class DepartureAdapter(private var departures: ArrayList<Departure>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class DepartureAdapter(private val departures: ArrayList<Departure>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    public fun setDepartures(departures: List<Departure>) {
+    fun setDepartures(departures: List<Departure>) {
         this.departures.clear()
         this.departures.addAll(departures)
-        //this.departures = departures
     }
 
     class DepartureViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {

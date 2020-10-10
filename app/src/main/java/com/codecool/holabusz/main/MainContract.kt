@@ -16,6 +16,7 @@ interface MainContract {
         fun setAdapterWithData(data: List<Departure>)
         fun hideAppBar()
         fun setSeekBarAction()
+        fun makeToast(string: String)
     }
 
     interface MainPresenter {

@@ -23,26 +23,19 @@ class LocationService : Service() {
         override fun onLocationResult(locationResult: LocationResult?) {
             super.onLocationResult(locationResult)
             if (locationResult != null && locationResult.lastLocation != null){
-                Log.d(Companion.TAG, "onLocationResult: DONE")
-                Log.d(Companion.TAG, "${locationResult.lastLocation.latitude}")
-                Log.d(Companion.TAG, "${locationResult.lastLocation.longitude}")
                 var latitude : Double = locationResult.lastLocation.latitude
                 var longtitude : Double = locationResult.lastLocation.longitude
-                Log.d("Location", latitude.toString() + "," + longtitude.toString())
+                //Log.d("Location", latitude.toString() + "," + longtitude.toString())
                 sendLocationToActivity(latitude,longtitude)
             }
         }
-
-
     }
 
     private fun sendLocationToActivity(lat:Double, lon:Double){
-        Log.d(TAG, "sendLocationToActivity: $lat, $lon")
         val sendLocationIntent = Intent("LocationUpdate")
         sendLocationIntent.putExtra("LAT", lat)
         sendLocationIntent.putExtra("LON", lon)
         LocalBroadcastManager.getInstance(this).sendBroadcast(sendLocationIntent)
-        //sendBroadcast(sendLocationIntent)
     }
 
     override fun onBind(intent: Intent?): IBinder? {
