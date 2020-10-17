@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             Log.d(TAG, "location changed:${location.value.lat}, ${location.value.lon}")
             if (currLat != 0.0 && currLon != 0.0) currLat?.toFloat()?.let { it1 ->
                 currLon?.toFloat()?.let { it2 ->
-                    presenter.preCheck(
+                    presenter.checkStops(
                         it1, it2,maxDistance)
                 }
             }
@@ -157,15 +157,16 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                setCenterMessage("")
                 showLoading()
-                departureAdapter.clearAdapter()
+                clearAdapter()
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 maxDistance = seekBar?.progress ?: 250
                 location.value.lat?.toFloat()?.let {
                     location.value.lon?.toFloat()?.let { it1 ->
-                        presenter.preCheck(
+                        presenter.checkStops(
                             it,
                             it1, maxDistance
                         )
@@ -239,6 +240,10 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun setAdapterWithData(data: List<Departure>) {
         departureAdapter.setDepartures(data)
+    }
+
+    override fun clearAdapter(){
+        departureAdapter.clearAdapter()
     }
 
     override fun setCenterMessage(text: String) {

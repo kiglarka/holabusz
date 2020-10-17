@@ -17,6 +17,7 @@ interface MainContract {
         fun makeToast(string: String)
         fun setCenterMessage(text: String)
         fun setAdapterWithData(data: List<Departure>)
+        fun clearAdapter()
     }
 
     interface MainPresenter {
@@ -27,7 +28,7 @@ interface MainContract {
         val requestApi: RequestApi
         fun filterNearByStops(meters: Int): List<Stop>
         fun getNearestStopId(): String?
-        fun preCheck(currLat: Float, currLon: Float, maxDistance: Int)
+        fun checkStops(currLat: Float, currLon: Float, maxDistance: Int)
     }
 
 }

@@ -57,7 +57,7 @@ class MainPresenter() : MainContract.MainPresenter {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    private fun checkStops(currLat: Float, currLon: Float, maxDistance: Int) {
+    override fun checkStops(currLat: Float, currLon: Float, maxDistance: Int) {
 
         var result = getAllStopObservable(currLat, currLon)
             .subscribeOn(Schedulers.io())
@@ -77,11 +77,13 @@ class MainPresenter() : MainContract.MainPresenter {
                         ).toInt() <= maxDistance
                     }
 
-                if (stopsRaw.size == 0) {
-                    Log.d(TAG, "gotStops: complex ÜRES")
-                    gotStops = false
-                    return@subscribe
-                } else gotStops = true
+                if (stopsRaw.isEmpty()) {
+                    view?.hideLoading()
+                    view?.setCenterMessage("There are no stops available in $maxDistance meters")
+                } else {
+                    view?.setCenterMessage("")
+                    getComplexData(currLat, currLon, maxDistance)
+                }
             },
 
                 { e ->
@@ -101,18 +103,6 @@ class MainPresenter() : MainContract.MainPresenter {
 
     private fun getCorrespondentRoute(routes: List<Routes>, routeId: String): Routes {
         return routes.first { it.id == routeId }
-    }
-
-    override fun preCheck(currLat: Float, currLon: Float, maxDistance: Int){
-        checkStops(currLat, currLon, maxDistance)
-        if (!gotStops) {
-            view?.hideLoading()
-            view?.setCenterMessage("There are no stops or vehicles available in $maxDistance meters")
-        }
-        else {
-            view?.setCenterMessage("")
-            getComplexData(currLat, currLon, maxDistance)
-        }
     }
 
 
@@ -136,12 +126,6 @@ class MainPresenter() : MainContract.MainPresenter {
                             it.lon
                         ).toInt() <= maxDistance
                     }
-
-                if (stopsRaw.size == 0) {
-                    Log.d(TAG, "gotStops: complex empty")
-                    view?.setCenterMessage("There are no stops or vehicles available within $maxDistance meters")
-
-                }
 
                 stops = stopsRaw
 
@@ -171,6 +155,7 @@ class MainPresenter() : MainContract.MainPresenter {
             .subscribe(
                 { departureResponse ->
 
+
                     // from departureResponse to stopTime
                     val responseData: DepartureListResponse = departureResponse.data
                     val departureData: StopTime = responseData.entry
@@ -196,20 +181,28 @@ class MainPresenter() : MainContract.MainPresenter {
                             )
                         }
 
-                    departures = stopTime.map {
-                        Departure(
-                            it.stopId,
-                            getStopName(stops, it.stopId),
-                            it.stopHeadsign,
-                            it.departureTime,
-                            it.tripId,
-                            getRouteId(trips, it.tripId),
-                            getCorrespondentRoute(routes, getRouteId(trips, it.tripId)).shortName,
-                            "#" + getCorrespondentRoute(routes, getRouteId(trips, it.tripId)).color
-                        )
-                    }.toMutableList()
+                    try {
+                        departures = arrayListOf()
+                        departures = stopTime.map {
+                            Departure(
+                                it.stopId,
+                                getStopName(stops, it.stopId),
+                                it.stopHeadsign,
+                                it.departureTime,
+                                it.tripId,
+                                getRouteId(trips, it.tripId),
+                                getCorrespondentRoute(routes, getRouteId(trips, it.tripId)).shortName,
+                                "#" + getCorrespondentRoute(routes, getRouteId(trips, it.tripId)).color
+                            )
+                        }.toMutableList()
 
-                    Log.d(TAG, "getComplexData: ${departures.size} vehicles")
+                    } catch(e:NullPointerException) {
+                        view?.hideLoading()
+                        view?.clearAdapter()
+                        view?.setCenterMessage("There are no vehicles available")
+                        return@subscribe
+                    }
+
 
                     try {
                         view?.hideLoading()
