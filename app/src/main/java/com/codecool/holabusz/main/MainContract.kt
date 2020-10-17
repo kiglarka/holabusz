@@ -1,6 +1,5 @@
 package com.codecool.holabusz.main
 
-import android.content.Context
 import com.codecool.holabusz.model.Departure
 import com.codecool.holabusz.model.Stop
 import com.codecool.holabusz.network.RequestApi
@@ -13,10 +12,11 @@ interface MainContract {
         fun showLoading()
         fun hideLoading()
         fun checkPermission()
-        fun setAdapterWithData(data: List<Departure>)
         fun hideAppBar()
         fun setSeekBarAction()
         fun makeToast(string: String)
+        fun setCenterMessage(text: String)
+        fun setAdapterWithData(data: List<Departure>)
     }
 
     interface MainPresenter {
@@ -27,7 +27,7 @@ interface MainContract {
         val requestApi: RequestApi
         fun filterNearByStops(meters: Int): List<Stop>
         fun getNearestStopId(): String?
-        fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int)
+        fun preCheck(currLat: Float, currLon: Float, maxDistance: Int)
     }
 
 }

@@ -1,6 +1,7 @@
 package com.codecool.holabusz.main
 
 import android.util.Log
+import com.codecool.holabusz.R
 import com.codecool.holabusz.model.*
 import com.codecool.holabusz.network.RequestApi
 import com.codecool.holabusz.network.RetrofitClient
@@ -10,6 +11,8 @@ import io.reactivex.schedulers.Schedulers
 import kotlin.math.acos
 
 class MainPresenter() : MainContract.MainPresenter {
+
+    private var gotStops = true
 
     var stops: MutableList<Stop> = mutableListOf()
     var departures: MutableList<Departure> = mutableListOf()
@@ -54,11 +57,7 @@ class MainPresenter() : MainContract.MainPresenter {
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-
-    private fun gotStops(currLat: Float, currLon: Float, maxDistance: Int) : Boolean{
-
-        Log.d(TAG, "getStops: currlat $currLat")
-        Log.d(TAG, "getStops: currlon $currLon")
+    private fun checkStops(currLat: Float, currLon: Float, maxDistance: Int) {
 
         var result = getAllStopObservable(currLat, currLon)
             .subscribeOn(Schedulers.io())
@@ -80,8 +79,9 @@ class MainPresenter() : MainContract.MainPresenter {
 
                 if (stopsRaw.size == 0) {
                     Log.d(TAG, "gotStops: complex ÜRES")
+                    gotStops = false
                     return@subscribe
-                }
+                } else gotStops = true
             },
 
                 { e ->
@@ -89,78 +89,7 @@ class MainPresenter() : MainContract.MainPresenter {
                     view?.hideLoading()
 
                 })
-
-        return true
     }
-
-
-
-/*
-    fun getDepartures() {
-
-        var result2 = getDepartureObservable()
-            .subscribe(
-                { departureResponse ->
-                    val responseData: DepartureListResponse = departureResponse.data
-                    val departureData: StopTime = responseData.entry
-                    val stopTime: List<Departure> = departureData.stopTimes
-
-                    try {
-                        view?.hideLoading()
-                        view?.setAdapterWithData(departures)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                },
-                { e ->
-                    Log.d(TAG, e.stackTraceToString())
-                    view?.hideLoading()
-
-                })
-
-
-        /*
-        getDepartureObservable().toObservable()
-            .subscribe(object : Observer<DepartureResponse?> {
-
-                override fun onSubscribe(d: Disposable) {
-                    Log.d(TAG, "onSubscribe: subscribed OK")
-                }
-
-                override fun onNext(departureResponse: DepartureResponse) {
-                    val responseData: DepartureListResponse = departureResponse.data
-                    val departureData: StopTime = responseData.entry
-                    val stopTime: List<Departure> = departureData.stopTimes
-
-                    departures = stopTime.map {
-                        Departure(
-
-                            it.stopHeadsign,
-                            it.departureTime,
-                            it.tripId
-                        )
-
-                    }.toMutableList()
-                }
-
-                override fun onError(e: Throwable) {
-                    Log.d(TAG, e.stackTraceToString())
-                }
-
-                override fun onComplete() {
-                    try {
-                        Log.d(TAG, departures.toString())
-                        view?.setAdapterWithData(departures)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            })
-
-         */
-    }
-
- */
 
     private fun getStopName(stops: List<Stop>, stopId: String): String {
         return stops.filter { it.id == stopId }.map { it.name }.joinToString()
@@ -174,23 +103,30 @@ class MainPresenter() : MainContract.MainPresenter {
         return routes.first { it.id == routeId }
     }
 
-    override fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int) {
-        Log.d(TAG, "getComplexData: started $currLat $currLon")
+    override fun preCheck(currLat: Float, currLon: Float, maxDistance: Int){
+        checkStops(currLat, currLon, maxDistance)
+        if (!gotStops) {
+            view?.hideLoading()
+            view?.setCenterMessage("There are no stops or vehicles available in $maxDistance meters")
+        }
+        else {
+            view?.setCenterMessage("")
+            getComplexData(currLat, currLon, maxDistance)
+        }
+    }
 
-        if (!gotStops(currLat,currLon,maxDistance)) return
+
+    private fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int) {
 
         val stopObservable = getAllStopObservable(currLat, currLon)
         var result = stopObservable
-            /*
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-             */
+
             .flatMap { stopResponse ->
 
                 val responseData: StopListResponse = stopResponse.data
                 val stopsData: List<Stop> = responseData.list
 
-                var stopsRaw = stopsData
+                val stopsRaw = stopsData
 
                     .filter {
                         meterDistanceBetweenPoints(
@@ -200,7 +136,13 @@ class MainPresenter() : MainContract.MainPresenter {
                             it.lon
                         ).toInt() <= maxDistance
                     }
-                    
+
+                if (stopsRaw.size == 0) {
+                    Log.d(TAG, "gotStops: complex empty")
+                    view?.setCenterMessage("There are no stops or vehicles available within $maxDistance meters")
+
+                }
+
                 stops = stopsRaw
 
                     .map {
@@ -215,21 +157,19 @@ class MainPresenter() : MainContract.MainPresenter {
                         )
                     }.toMutableList()
 
-                Log.d(TAG, "stopsIds: ${stops.size}")
+                Log.d(TAG, "getComplexData: ${stops.size} stops")
+
                 requestApi.getArrivalsAndDeparturesForStop(
                     key = "apaiary-test", stopId = stops.map { it.id }.joinToString(
                         "&stopId="
                     ), limit = 60
                 )
-
             }
 
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-
             .subscribe(
                 { departureResponse ->
-
 
                     // from departureResponse to stopTime
                     val responseData: DepartureListResponse = departureResponse.data
@@ -269,7 +209,7 @@ class MainPresenter() : MainContract.MainPresenter {
                         )
                     }.toMutableList()
 
-                    Log.d(TAG, "getComplexData: ${departures.size}")
+                    Log.d(TAG, "getComplexData: ${departures.size} vehicles")
 
                     try {
                         view?.hideLoading()
@@ -280,7 +220,6 @@ class MainPresenter() : MainContract.MainPresenter {
                     }
                 },
                 { e ->
-                    // TODO: 2020.09.16. to log the url somewhere
                     Log.d(TAG, e.stackTraceToString())
                     view?.hideLoading()
 
@@ -294,6 +233,7 @@ class MainPresenter() : MainContract.MainPresenter {
         stopLat: Float,
         stopLon: Float
     ): Double {
+
         val pk: Float = (180F / Math.PI).toFloat()
 
         val a1: Float = currLat / pk
@@ -312,7 +252,6 @@ class MainPresenter() : MainContract.MainPresenter {
             )
 
         val t3: Double = Math.sin(a1.toDouble()) * Math.sin(b1.toDouble())
-
         val tt: Double = acos(t1 + t2 + t3)
 
         return 6366000 * tt

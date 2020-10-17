@@ -7,6 +7,17 @@
     android:background="#fcfcfc"
     tools:context=".main.MainActivity">
 
+    <TextView
+        android:id="@+id/centerTextView"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text=""/>
+
 
     <SeekBar
         android:padding="@dimen/padding_mini"

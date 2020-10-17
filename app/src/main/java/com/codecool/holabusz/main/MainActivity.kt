@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codecool.holabusz.R
+import com.codecool.holabusz.R.string
 import com.codecool.holabusz.model.Departure
 import com.codecool.holabusz.util.Constants
 import com.codecool.holabusz.util.LocationService
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         }
     }
 
-    val departureAdapter = DepartureAdapter(arrayListOf())
+    private var departureAdapter = DepartureAdapter(arrayListOf())
     private lateinit var presenter: MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,12 +66,17 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
         hideAppBar()
 
+        setAdapter()
+
+        presenter.firstRun()
+    }
+
+    private fun setAdapter() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             //this.adapter = DepartureAdapter(arrayListOf())
             this.adapter = departureAdapter
         }
-        presenter.firstRun()
     }
 
 
@@ -93,7 +99,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             Log.d(TAG, "location changed:${location.value.lat}, ${location.value.lon}")
             if (currLat != 0.0 && currLon != 0.0) currLat?.toFloat()?.let { it1 ->
                 currLon?.toFloat()?.let { it2 ->
-                    presenter.getComplexData(
+                    presenter.preCheck(
                         it1, it2,maxDistance)
                 }
             }
@@ -143,21 +149,23 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun setSeekBarAction() {
         seekBar.progress = maxDistance
-        testText.text = seekBar.progress.toString() + " m"
+        testText.text = seekBar.progress.toString() + getString(string.meter)
 
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                testText.text = progress.toString() + " m"
+                testText.text = progress.toString() + getString(string.meter)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                showLoading()
+                departureAdapter.clearAdapter()
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 maxDistance = seekBar?.progress ?: 250
                 location.value.lat?.toFloat()?.let {
                     location.value.lon?.toFloat()?.let { it1 ->
-                        presenter.getComplexData(
+                        presenter.preCheck(
                             it,
                             it1, maxDistance
                         )
@@ -230,7 +238,14 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     }
 
     override fun setAdapterWithData(data: List<Departure>) {
-        departureAdapter.setDepartures(data)
+        if (data.isEmpty()) {
+            setCenterMessage(string.empty_list.toString())
+        }
+        else departureAdapter.setDepartures(data)
+    }
+
+    override fun setCenterMessage(text: String) {
+        centerTextView.text = text
     }
 
     override fun showLoading() {

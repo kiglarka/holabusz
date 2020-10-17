@@ -1,7 +1,5 @@
 package com.codecool.holabusz.model
 
-
-
 data class StopResponse(val status : String, val currentTime : String, val data : StopListResponse)
 data class StopListResponse(val list : List<Stop>)
 
@@ -25,7 +23,6 @@ data class References(val trips: Map<String,Trip>, val routes: Map<String,Routes
 /*
 data class DepartureRefTripResponse(val trips : Trip)
 data class DepartureRefRouteResponse(val routes : List<Routes>)
-
  */
 
 
