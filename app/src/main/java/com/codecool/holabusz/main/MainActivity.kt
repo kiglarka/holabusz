@@ -238,10 +238,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     }
 
     override fun setAdapterWithData(data: List<Departure>) {
-        if (data.isEmpty()) {
-            setCenterMessage(string.empty_list.toString())
-        }
-        else departureAdapter.setDepartures(data)
+        departureAdapter.setDepartures(data)
     }
 
     override fun setCenterMessage(text: String) {
