@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Holabusz</string>
+    <string name="testtext">testText</string>
+    <string name="test">test</string>
+    <string name="bkk_logo">bkk_logo</string>
+    <string name="stopname">stopName</string>
+    <string name="header">header</string>
+    <string name="_149">149</string>
+    <string name="meter"> m</string>
+    <string name="empty_list">There are no stops or vehicles available</string>
+</resources>
