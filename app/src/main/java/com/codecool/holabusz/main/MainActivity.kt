@@ -23,6 +23,7 @@ import com.codecool.holabusz.R.string
 import com.codecool.holabusz.model.Departure
 import com.codecool.holabusz.util.Constants
 import com.codecool.holabusz.util.LocationService
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -65,7 +66,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         presenter.onAttach(this)
 
         hideAppBar()
-
         setAdapter()
 
         presenter.firstRun()
@@ -109,6 +109,11 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     override fun onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(locationReceiver)
         super.onPause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.onDetach()
     }
 
     private fun isLocationServiceRunning(): Boolean {
