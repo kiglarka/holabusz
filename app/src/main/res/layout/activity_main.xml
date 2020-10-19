@@ -23,7 +23,9 @@
         android:padding="@dimen/padding_mini"
         android:id="@+id/seekBar"
         android:layout_width="400dp"
-        android:layout_height="50dp"
+        android:layout_height="30dp"
+        android:progressTint="@color/bkk_purple"
+        android:thumbTint="@color/bkk_purple"
         android:max="500"
         android:progress="50"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,6 +53,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         style="?android:attr/progressBarStyle"
+        android:indeterminateTint="@color/bkk_purple"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
