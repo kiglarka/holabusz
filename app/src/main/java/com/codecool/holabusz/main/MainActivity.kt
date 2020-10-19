@@ -103,7 +103,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
                         it1, it2,maxDistance)
                 }
             }
-
         }
     }
 
