@@ -26,6 +26,7 @@ import com.codecool.holabusz.util.LocationService
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity(), MainContract.MainView {
 
@@ -56,13 +57,12 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     }
 
     private var departureAdapter = DepartureAdapter(arrayListOf())
-    private lateinit var presenter: MainPresenter
+    private val presenter : MainPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        presenter = MainPresenter()
         presenter.onAttach(this)
 
         hideAppBar()
