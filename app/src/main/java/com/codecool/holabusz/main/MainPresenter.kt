@@ -52,14 +52,14 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
 
     override fun checkStops(currLat: Float, currLon: Float, maxDistance: Int) {
 
-        var result = getAllStopObservable(currLat, currLon)
+        val disposable = getAllStopObservable(currLat, currLon)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ stopResponse ->
                 val responseData: StopListResponse = stopResponse.data
                 val stopsData: List<Stop> = responseData.list
 
-                var stopsRaw = stopsData
+                val stopsRaw = stopsData
 
                     .filter {
                         meterDistanceBetweenPoints(
@@ -102,7 +102,7 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
     private fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int) {
 
         val stopObservable = getAllStopObservable(currLat, currLon)
-        var result = stopObservable
+        val disposable = stopObservable
 
             .flatMap { stopResponse ->
 
@@ -154,8 +154,6 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
                     val departureData: StopTime = responseData.entry
                     val stopTime: List<Departure> = departureData.stopTimes
 
-                    val references = responseData.references
-
                     val trips =
                         responseData.references.trips.map {
                             it.value
@@ -184,12 +182,18 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
                                 it.departureTime,
                                 it.tripId,
                                 getRouteId(trips, it.tripId),
-                                getCorrespondentRoute(routes, getRouteId(trips, it.tripId)).shortName,
-                                "#" + getCorrespondentRoute(routes, getRouteId(trips, it.tripId)).color
+                                getCorrespondentRoute(
+                                    routes,
+                                    getRouteId(trips, it.tripId)
+                                ).shortName,
+                                "#" + getCorrespondentRoute(
+                                    routes,
+                                    getRouteId(trips, it.tripId)
+                                ).color
                             )
                         }.toMutableList()
 
-                    } catch(e:NullPointerException) {
+                    } catch (e: NullPointerException) {
                         view?.hideLoading()
                         view?.clearAdapter()
                         view?.setCenterMessage("There are no vehicles available")

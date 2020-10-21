@@ -47,7 +47,7 @@ val NetworkModule = module {
             .build()
     }
 
-    val requestApi =  single<RequestApi> {
+    single<RequestApi> {
         get<Retrofit>().create(RequestApi::class.java)
     }
 }

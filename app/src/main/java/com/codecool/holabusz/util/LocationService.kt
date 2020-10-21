@@ -58,7 +58,7 @@ class LocationService : Service() {
             channelId
         )
 
-        builder.setSmallIcon(R.mipmap.ic_launcher)
+        builder.setSmallIcon(R.mipmap.bkk_logo)
         builder.setContentTitle("Location Service")
         builder.setDefaults(NotificationCompat.DEFAULT_ALL)
         builder.setContentText("Running")
