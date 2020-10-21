@@ -1,26 +1,23 @@
 package com.codecool.holabusz.main
 
 import android.util.Log
-import com.codecool.holabusz.R
 import com.codecool.holabusz.model.*
 import com.codecool.holabusz.network.RequestApi
-import com.codecool.holabusz.network.RetrofitClient
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import kotlin.math.acos
 
-class MainPresenter() : MainContract.MainPresenter {
+class MainPresenter() : MainContract.MainPresenter, KoinComponent {
 
     private var gotStops = true
 
     var stops: MutableList<Stop> = mutableListOf()
     var departures: MutableList<Departure> = mutableListOf()
 
-    override val requestApi: RequestApi
-        get() {
-            return RetrofitClient.getRequestApi()
-        }
+    val requestApi: RequestApi by inject()
 
     private var view: MainContract.MainView? = null
 

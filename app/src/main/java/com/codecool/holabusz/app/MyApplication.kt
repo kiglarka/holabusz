@@ -15,7 +15,8 @@ class MyApplication : Application() {
             androidContext(this@MyApplication)
             modules(
                 listOf(
-                    MainModule
+                    MainModule,
+                    NetworkModule
                 )
             )
         }

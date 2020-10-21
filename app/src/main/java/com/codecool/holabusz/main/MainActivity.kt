@@ -27,8 +27,9 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
+import org.koin.java.KoinJavaComponent.get
 
-class MainActivity : AppCompatActivity(), MainContract.MainView {
+class MainActivity() : AppCompatActivity(), MainContract.MainView {
 
     data class Location(var lat: Double?, var lon: Double?)
 

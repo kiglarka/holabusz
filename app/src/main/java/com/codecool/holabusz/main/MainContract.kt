@@ -4,6 +4,7 @@ import com.codecool.holabusz.model.Departure
 import com.codecool.holabusz.model.Stop
 import com.codecool.holabusz.network.RequestApi
 import java.lang.ref.WeakReference
+import kotlin.properties.ReadOnlyProperty
 
 interface MainContract {
 
@@ -25,7 +26,6 @@ interface MainContract {
         fun onAttach(view: MainContract.MainView)
         fun onDetach()
         fun firstRun()
-        val requestApi: RequestApi
         fun filterNearByStops(meters: Int): List<Stop>
         fun getNearestStopId(): String?
         fun checkStops(currLat: Float, currLon: Float, maxDistance: Int)
