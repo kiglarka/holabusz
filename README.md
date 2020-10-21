@@ -23,13 +23,7 @@ This is an BKK API based, single activity application showing the closest stops 
 
 ## Sources
 
-### Internet API: BKK API
+### BKK API
 https://bkkfutar.docs.apiary.io/
-
-### Dependency Injection by Koin
-https://insert-koin.io/
-https://github.com/InsertKoinIO/koin
-
-
 
 
