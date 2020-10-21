@@ -1,11 +1,11 @@
 # Holabusz Lite
 
-## Tags 
-#RecyclerView #RxJava #BKK #GoogleLocationServices #MVP #Kotlin #DI #Koin
-
 ## Description
 
 This is an BKK API based, single activity application showing the closest stops with the soonest departing vehicles using the device current location at Budapest, Hungary.
+
+## Tags 
+#RecyclerView #RxJava #BKK #GoogleLocationServices #MVP #Kotlin #DI #Koin
 
 ## Actual Features
 
