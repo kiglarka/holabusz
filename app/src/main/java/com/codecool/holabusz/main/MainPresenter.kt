@@ -6,18 +6,14 @@ import com.codecool.holabusz.network.RequestApi
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import org.koin.core.KoinComponent
-import org.koin.core.inject
 import kotlin.math.acos
 
-class MainPresenter() : MainContract.MainPresenter, KoinComponent {
+class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
 
     private var gotStops = true
 
     var stops: MutableList<Stop> = mutableListOf()
     var departures: MutableList<Departure> = mutableListOf()
-
-    val requestApi: RequestApi by inject()
 
     private var view: MainContract.MainView? = null
 

@@ -23,13 +23,14 @@ import com.codecool.holabusz.R.string
 import com.codecool.holabusz.model.Departure
 import com.codecool.holabusz.util.Constants
 import com.codecool.holabusz.util.LocationService
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
-import org.koin.java.KoinJavaComponent.get
 
-class MainActivity() : AppCompatActivity(), MainContract.MainView {
+
+class MainActivity : AppCompatActivity(), MainContract.MainView {
+    private val presenter : MainPresenter by inject()
+    private var departureAdapter = DepartureAdapter(arrayListOf())
 
     data class Location(var lat: Double?, var lon: Double?)
 
@@ -56,9 +57,6 @@ class MainActivity() : AppCompatActivity(), MainContract.MainView {
                 location.value = Location(lat, lon)
         }
     }
-
-    private var departureAdapter = DepartureAdapter(arrayListOf())
-    private val presenter : MainPresenter by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

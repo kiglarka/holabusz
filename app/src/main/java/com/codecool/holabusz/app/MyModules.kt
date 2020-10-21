@@ -3,8 +3,6 @@ import com.codecool.holabusz.main.MainPresenter
 import com.codecool.holabusz.network.EncodingInterceptor
 import com.codecool.holabusz.network.RequestApi
 import com.codecool.holabusz.network.RetrofitClient
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module
@@ -13,7 +11,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 val MainModule = module {
-    single { MainPresenter() }
+    single { MainPresenter(get<RequestApi>()) }
 }
 
 
@@ -49,7 +47,7 @@ val NetworkModule = module {
             .build()
     }
 
-    single<RequestApi> {
+    val requestApi =  single<RequestApi> {
         get<Retrofit>().create(RequestApi::class.java)
     }
 }
