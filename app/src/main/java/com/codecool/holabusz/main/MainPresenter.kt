@@ -40,16 +40,6 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
         )
     }
 
-    fun getDepartureObservable(): Single<DepartureResponse> {
-        val stopIdValue = listOf("BKK_F00412", "BKK_F02461").joinToString("&stopId=")
-        Log.d(TAG, "stopId: $stopIdValue")
-        return requestApi.getArrivalsAndDeparturesForStop(
-            key = "apaiary-test", stopId = stopIdValue, limit = 60
-        )
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
-
     override fun checkStops(currLat: Float, currLon: Float, maxDistance: Int) {
 
         val disposable = getAllStopObservable(currLat, currLon)
@@ -98,9 +88,7 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
         return routes.first { it.id == routeId }
     }
 
-
     private fun getComplexData(currLat: Float, currLon: Float, maxDistance: Int) {
-
         val stopObservable = getAllStopObservable(currLat, currLon)
         val disposable = stopObservable
 
@@ -134,8 +122,6 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
                         )
                     }.toMutableList()
 
-                Log.d(TAG, "getComplexData: ${stops.size} stops")
-
                 requestApi.getArrivalsAndDeparturesForStop(
                     key = "apaiary-test", stopId = stops.map { it.id }.joinToString(
                         "&stopId="
@@ -147,8 +133,6 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { departureResponse ->
-
-
                     // from departureResponse to stopTime
                     val responseData: DepartureListResponse = departureResponse.data
                     val departureData: StopTime = responseData.entry
@@ -245,10 +229,6 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
         val tt: Double = acos(t1 + t2 + t3)
 
         return 6366000 * tt
-    }
-
-    override fun filterNearByStops(meters: Int): List<Stop> {
-        return stops.filter { it.distance.toInt() <= meters }
     }
 
     override fun getNearestStopId(): String? {

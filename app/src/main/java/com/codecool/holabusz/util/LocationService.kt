@@ -25,7 +25,6 @@ class LocationService : Service() {
             if (locationResult != null && locationResult.lastLocation != null){
                 var latitude : Double = locationResult.lastLocation.latitude
                 var longtitude : Double = locationResult.lastLocation.longitude
-                //Log.d("Location", latitude.toString() + "," + longtitude.toString())
                 sendLocationToActivity(latitude,longtitude)
             }
         }
