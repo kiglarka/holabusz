@@ -10,10 +10,8 @@ import kotlin.math.acos
 
 class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
 
-    private var gotStops = true
-
-    var stops: MutableList<Stop> = mutableListOf()
-    var departures: MutableList<Departure> = mutableListOf()
+    private var stops: MutableList<Stop> = mutableListOf()
+    private var departures: MutableList<Departure> = mutableListOf()
 
     private var view: MainContract.MainView? = null
 
@@ -30,7 +28,6 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
         view?.checkPermission()
     }
 
-
     fun getAllStopObservable(currLat: Float, currLon: Float): Single<StopResponse> {
         return requestApi.getStopsForLocation(
             key = "apaiary-test",
@@ -41,7 +38,6 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
     }
 
     override fun checkStops(currLat: Float, currLon: Float, maxDistance: Int) {
-
         val disposable = getAllStopObservable(currLat, currLon)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -108,10 +104,7 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
                         ).toInt() <= maxDistance
                     }
 
-                stops = stopsRaw
-
-                    .map {
-
+                stops = stopsRaw.map {
                         Stop(
                             it.id,
                             it.name,
@@ -138,8 +131,7 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
                     val departureData: StopTime = responseData.entry
                     val stopTime: List<Departure> = departureData.stopTimes
 
-                    val trips =
-                        responseData.references.trips.map {
+                    val trips = responseData.references.trips.map {
                             it.value
                             Trip(
                                 it.value.id,
@@ -234,7 +226,6 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
     override fun getNearestStopId(): String? {
         return stops.minByOrNull { it.distance }?.id
     }
-
 
     companion object {
         private const val TAG = "MainPresenter"
