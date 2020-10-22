@@ -22,10 +22,11 @@ Feel free to install Holabusz.apk in the root folder on any Android devices.
 * Refresh upon gesture
 * Favorite stops & vehicles and other custom user settings to save into SharedPreferences
 * Flavours to introduce
+* Handle orientation changes
 
 ## Buglist
 
-* Longers stops' name interfers with the time of departure on the UI
+* Longer stops' name interfers with the time of departure on the UI
 * Need to disable seekbar during refresh or handle API call cancellation
 
 ## Sources
