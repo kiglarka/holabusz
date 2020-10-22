@@ -7,6 +7,9 @@ This is an BKK API based, single activity application showing the closest stops 
 ## Tags 
 #RecyclerView #RxJava #BKK #GoogleLocationServices #MVP #Kotlin #DI #Koin
 
+## How to install
+Feel free to install Holabusz.apk in the root folder on any Android devices.
+
 ## Actual Features
 
 * The application has access to device's current location
@@ -16,10 +19,14 @@ This is an BKK API based, single activity application showing the closest stops 
 ## Future Features
 
 * An arrow to show the direction and the distance of stops
-* Custom design
-* Favorite stops & vehicles to save into SharedPreferences
-* Custom user settings
+* Refresh upon gesture
+* Favorite stops & vehicles and other custom user settings to save into SharedPreferences
 * Flavours to introduce
+
+## Buglist
+
+* Longers stops' name interfers with the time of departure on the UI
+* Need to disable seekbar during refresh or handle API call cancellation
 
 ## Sources
 
