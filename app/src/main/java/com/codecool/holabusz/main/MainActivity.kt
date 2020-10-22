@@ -66,8 +66,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
         hideAppBar()
         setAdapter()
-
-        presenter.firstRun()
     }
 
     private fun setAdapter() {
@@ -78,7 +76,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         }
     }
 
-
     override fun hideAppBar() {
         supportActionBar?.hide()
     }
@@ -88,8 +85,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
             locationReceiver,
             IntentFilter("LocationUpdate")
         )
-
         super.onResume()
+        presenter.refresh()
         setSeekBarAction()
 
         location.observable.subscribe {
@@ -107,6 +104,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
     override fun onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(locationReceiver)
+        stopLocationService()
         super.onPause()
     }
 

@@ -25,7 +25,7 @@ interface MainContract {
 
         fun onAttach(view: MainContract.MainView)
         fun onDetach()
-        fun firstRun()
+        fun refresh()
         fun filterNearByStops(meters: Int): List<Stop>
         fun getNearestStopId(): String?
         fun checkStops(currLat: Float, currLon: Float, maxDistance: Int)

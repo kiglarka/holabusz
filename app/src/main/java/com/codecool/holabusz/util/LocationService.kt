@@ -83,8 +83,6 @@ class LocationService : Service() {
         locationRequest.setFastestInterval(8000)
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
-        // permission?
-
         LocationServices.getFusedLocationProviderClient(this)
             .requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper())
 

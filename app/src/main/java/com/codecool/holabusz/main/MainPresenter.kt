@@ -25,7 +25,7 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
         this.view = null
     }
 
-    override fun firstRun() {
+    override fun refresh() {
         view?.showLoading()
         view?.checkPermission()
     }
