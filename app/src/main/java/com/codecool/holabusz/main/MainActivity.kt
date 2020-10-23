@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.codecool.holabusz.R
 import com.codecool.holabusz.R.string
 import com.codecool.holabusz.model.Departure
@@ -28,7 +29,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 
 
-class MainActivity : AppCompatActivity(), MainContract.MainView {
+class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLayout.OnRefreshListener {
     private val presenter : MainPresenter by inject()
     private var departureAdapter = DepartureAdapter(arrayListOf())
 
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
         hideAppBar()
         setAdapter()
+        swiperefresh.setOnRefreshListener(this)
     }
 
     private fun setAdapter() {
@@ -89,15 +91,11 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         presenter.refresh()
         setSeekBarAction()
 
+        //refreshData upon location change
         location.observable.subscribe {
-            val currLat = location.value.lat
-            val currLon = location.value.lon
             Log.d(TAG, "location changed:${location.value.lat}, ${location.value.lon}")
-            if (currLat != 0.0 && currLon != 0.0) currLat?.toFloat()?.let { it1 ->
-                currLon?.toFloat()?.let { it2 ->
-                    presenter.checkStops(
-                        it1, it2,maxDistance)
-                }
+            if (location.value.lat !== 0.0 && location.value.lon !== 0.0) {
+                refreshData()
             }
         }
     }
@@ -165,14 +163,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 maxDistance = seekBar?.progress ?: 250
-                location.value.lat?.toFloat()?.let {
-                    location.value.lon?.toFloat()?.let { it1 ->
-                        presenter.checkStops(
-                            it,
-                            it1, maxDistance
-                        )
-                    }
-                }
+                refreshData()
             }
         })
     }
@@ -252,13 +243,11 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
     }
 
     override fun showLoading() {
-        progressBar.visibility = View.VISIBLE
-        Thread.sleep(1000)
+        swiperefresh.isRefreshing = true
     }
 
     override fun hideLoading() {
-        Thread.sleep(1000)
-        progressBar.visibility = View.INVISIBLE
+        swiperefresh.isRefreshing = false
     }
 
     companion object {
@@ -266,4 +255,22 @@ class MainActivity : AppCompatActivity(), MainContract.MainView {
         private const val REQUEST_CODE_LOCATION_PERMISSION = 1
     }
 
+    override fun onRefresh() {
+        clearAdapter()
+        refreshData()
+    }
+
+
+
+
+    private fun refreshData() {
+        location.value.lat?.toFloat()?.let {
+            location.value.lon?.toFloat()?.let { it1 ->
+                presenter.checkStops(
+                    it,
+                    it1, maxDistance
+                )
+            }
+        }
+    }
 }
