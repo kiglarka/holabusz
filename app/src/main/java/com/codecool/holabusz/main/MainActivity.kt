@@ -8,6 +8,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Parcelable
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
@@ -30,12 +32,12 @@ import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLayout.OnRefreshListener {
-    private val presenter : MainPresenter by inject()
+    private val presenter: MainPresenter by inject()
     private var departureAdapter = DepartureAdapter(arrayListOf())
 
     data class Location(var lat: Double?, var lon: Double?)
 
-    private var location = Variable(Location(0.0 ,0.0))
+    private var location = Variable(Location(0.0, 0.0))
     private var maxDistance = 250
 
     class Variable<T>(private val defaultValue: T) {
@@ -60,15 +62,15 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         presenter.onAttach(this)
-
         hideAppBar()
         setAdapter()
         swiperefresh.setOnRefreshListener(this)
+        super.onCreate(savedInstanceState)
     }
+
 
     private fun setAdapter() {
         recyclerView.apply {
@@ -260,9 +262,6 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
         refreshData()
     }
 
-
-
-
     private fun refreshData() {
         location.value.lat?.toFloat()?.let {
             location.value.lon?.toFloat()?.let { it1 ->
@@ -273,4 +272,17 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
             }
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val departures = departureAdapter.getDepartures()
+        outState.putParcelableArrayList("departs", departures)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val departures = savedInstanceState.getParcelableArrayList<Departure>("departs")
+        departures?.toList()?.let { setAdapterWithData(it) }
+    }
 }
+

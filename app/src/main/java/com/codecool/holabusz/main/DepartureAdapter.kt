@@ -1,6 +1,7 @@
 package com.codecool.holabusz.main
 
 import android.graphics.Color
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,11 @@ class DepartureAdapter(private val departures: ArrayList<Departure>) :
         this.departures.addAll(departures)
         notifyDataSetChanged()
     }
+
+    fun getDepartures(): ArrayList<Departure> {
+        return departures
+    }
+
 
     class DepartureViewHolder constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // TODO: 2020.09.01. itemview.idName would refer to the view

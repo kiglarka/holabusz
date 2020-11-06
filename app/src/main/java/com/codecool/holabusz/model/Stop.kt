@@ -1,7 +1,11 @@
 package com.codecool.holabusz.model
 
-data class StopResponse(val status : String, val currentTime : String, val data : StopListResponse)
-data class StopListResponse(val list : List<Stop>)
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
+
+data class StopResponse(val status: String, val currentTime: String, val data: StopListResponse)
+data class StopListResponse(val list: List<Stop>)
 
 data class Stop(
     val id: String,
@@ -13,18 +17,24 @@ data class Stop(
 )
 
 
-data class DepartureResponse(val status : String, val currentTime : String, val data : DepartureListResponse)
-data class DepartureListResponse(val entry : StopTime, val references: References)
+data class DepartureResponse(
+    val status: String,
+    val currentTime: String,
+    val data: DepartureListResponse
+)
+
+data class DepartureListResponse(val entry: StopTime, val references: References)
 
 data class StopTime(val stopTimes: List<Departure>)
 
-data class References(val trips: Map<String,Trip>, val routes: Map<String,Routes>)
+data class References(val trips: Map<String, Trip>, val routes: Map<String, Routes>)
 
 /*
 data class DepartureRefTripResponse(val trips : Trip)
 data class DepartureRefRouteResponse(val routes : List<Routes>)
  */
 
+@Parcelize
 data class Departure(
     val stopId: String,
     val stopName: String,
@@ -34,7 +44,7 @@ data class Departure(
     val routeId: String,
     val shortName: String,
     val color: String
-)
+) : Parcelable
 
 data class Routes(
     val id: String,
