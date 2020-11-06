@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
             val lat = intent?.getDoubleExtra("LAT", 47.493414)
             val lon = intent?.getDoubleExtra("LON", 19.017302)
             if (lat != location.value.lat
-                && lon != location.value.lon
+                && lon != location.value.lon && location.value.lon != 0.0 && location.value.lat != 0.0
             )
                 location.value = Location(lat, lon)
         }
