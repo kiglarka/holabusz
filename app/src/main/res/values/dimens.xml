@@ -4,7 +4,7 @@
     <dimen name="corner_radius">5dp</dimen>
     <dimen name="padding_mini">5dp</dimen>
     <dimen name="textSize_large">25sp</dimen>
-    <dimen name="margin_maxi">50dp</dimen>
+    <dimen name="margin_maxi">10dp</dimen>
     <dimen name="image_width">72dp</dimen>
     <dimen name="image_height">54dp</dimen>
 </resources>
