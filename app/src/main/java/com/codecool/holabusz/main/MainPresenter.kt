@@ -169,6 +169,8 @@ class MainPresenter(val requestApi: RequestApi) : MainContract.MainPresenter {
                             )
                         }.toMutableList()
 
+                        departures.apply {sortBy { departure ->  departure.departureTime}}
+
                     } catch (e: NullPointerException) {
                         view?.hideLoading()
                         view?.clearAdapter()
