@@ -1,6 +1,6 @@
 # Holabusz Lite
 
-![no_departures](https://github.com/kiglarka/holabusz/temp/no_vehicles.png) ![main](https://github.com/kiglarka/holabusz/temp/main.png) ![no_stops](https://github.com/kiglarka/holabusz/temp/no_vehno_stops.png)
+![no_departures](https://github.com/kiglarka/holabusz/tree/master/temp/no_vehicles.png) ![main](https://github.com/kiglarka/holabusz/tree/master/temp/main.png) ![no_stops](https://github.com/kiglarka/holabusz/tree/master/temp/no_vehno_stops.png)
 
 ## Description
 
