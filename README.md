@@ -1,6 +1,6 @@
 # Holabusz Lite
 
-<img src="/temp/no_vehicles.png" width="310"><img src="/temp/main.png" width="310"><img src="/temp/no_stops.png" width="310">
+<img src="/temp/no_vehicles.png" width="300"><img src="/temp/main.png" width="300"><img src="/temp/no_stops.png" width="300">
 
 ## Description
 
