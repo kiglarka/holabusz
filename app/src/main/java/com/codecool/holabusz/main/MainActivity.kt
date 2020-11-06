@@ -8,10 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Parcelable
-import android.os.PersistableBundle
 import android.util.Log
-import android.view.View
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
@@ -31,16 +28,27 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 
 
-class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLayout.OnRefreshListener {
+class MainActivity : AppCompatActivity(), MainContract.MainView,
+    SwipeRefreshLayout.OnRefreshListener {
+
+    companion object {
+        private const val TAG = "MainActivity"
+        private const val DEFAULT_MAX_DISTANCE = 250
+        private val DEFAULT_DEPARTURES : ArrayList<Departure> = arrayListOf()
+    }
+
+    var departures : ArrayList<Departure> = DEFAULT_DEPARTURES
+    private var maxDistance = DEFAULT_MAX_DISTANCE
+
     private val presenter: MainPresenter by inject()
-    private var departureAdapter = DepartureAdapter(arrayListOf())
+    private var departureAdapter = DepartureAdapter(departures)
 
-    data class Location(var lat: Double?, var lon: Double?)
+    private data class Location(var lat: Double? = null, var lon: Double? = null)
+    private var location = Variable(Location())
 
-    private var location = Variable(Location(0.0, 0.0))
-    private var maxDistance = 250
 
-    class Variable<T>(private val defaultValue: T) {
+
+    private class Variable<T>(private val defaultValue: T) {
         var value: T = defaultValue
             set(value) {
                 field = value
@@ -54,25 +62,26 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
             // get extra data from intent
             val lat = intent?.getDoubleExtra("LAT", 47.493414)
             val lon = intent?.getDoubleExtra("LON", 19.017302)
+            // if repetitive location requests result in a different location
             if (lat != location.value.lat
-                && lon != location.value.lon && location.value.lon != 0.0 && location.value.lat != 0.0
+                && lon != location.value.lon
             )
                 location.value = Location(lat, lon)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         presenter.onAttach(this)
         hideAppBar()
-        setAdapter()
+        initAdapter()
         swiperefresh.setOnRefreshListener(this)
-        super.onCreate(savedInstanceState)
+
     }
 
 
-    private fun setAdapter() {
+    private fun initAdapter() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             //this.adapter = DepartureAdapter(arrayListOf())
@@ -96,9 +105,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
         //refreshData upon location change
         location.observable.subscribe {
             Log.d(TAG, "location changed:${location.value.lat}, ${location.value.lon}")
-            if (location.value.lat !== 0.0 && location.value.lon !== 0.0) {
-                refreshData()
-            }
+            refreshData()
         }
     }
 
@@ -135,7 +142,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
             val intent = Intent(applicationContext, LocationService::class.java)
             intent.setAction(Constants.ACTION_START_LOCATION_SERVICE)
             startService(intent)
-            Toast.makeText(this, "Location Service Started", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "startLocationService: Location Service Started")
         }
     }
 
@@ -144,7 +151,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
             val intent = Intent(applicationContext, LocationService::class.java)
             intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE)
             startService(intent)
-            Toast.makeText(this, "Location Service Stopped", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "stopLocationService: Location Service Stopped")
         }
     }
 
@@ -170,8 +177,8 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
         })
     }
 
-    override fun makeToast(string: String){
-        Toast.makeText(this,string,Toast.LENGTH_LONG).show()
+    override fun makeToast(string: String) {
+        Toast.makeText(this, string, Toast.LENGTH_LONG).show()
     }
 
 
@@ -236,7 +243,7 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
         departureAdapter.setDepartures(data)
     }
 
-    override fun clearAdapter(){
+    override fun clearAdapter() {
         departureAdapter.clearAdapter()
     }
 
@@ -252,17 +259,13 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
         swiperefresh.isRefreshing = false
     }
 
-    companion object {
-        private const val TAG = "MainActivity"
-        private const val REQUEST_CODE_LOCATION_PERMISSION = 1
-    }
-
     override fun onRefresh() {
         clearAdapter()
         refreshData()
     }
 
     private fun refreshData() {
+        Log.d(TAG, "refreshData: Current location: ${location.value}")
         location.value.lat?.toFloat()?.let {
             location.value.lon?.toFloat()?.let { it1 ->
                 presenter.checkStops(
@@ -275,14 +278,18 @@ class MainActivity : AppCompatActivity(), MainContract.MainView, SwipeRefreshLay
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val departures = departureAdapter.getDepartures()
-        outState.putParcelableArrayList("departs", departures)
+        Log.d(TAG, "onSaveInstanceState:departures $departures")
+        location.value.lat?.let { outState.putDouble("lat", it) }
+        location.value.lon?.let { outState.putDouble("lon", it) }
+        outState.putInt("maxDistance",maxDistance)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val departures = savedInstanceState.getParcelableArrayList<Departure>("departs")
-        departures?.toList()?.let { setAdapterWithData(it) }
+        val lat = savedInstanceState.getDouble("lat")
+        val lon = savedInstanceState.getDouble("lon")
+        location.value = Location(lat, lon)
+        maxDistance = savedInstanceState.getInt("maxDistance")
     }
 }
 
