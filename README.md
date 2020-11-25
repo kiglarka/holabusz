@@ -1,5 +1,7 @@
 # Holabusz Lite
 
+<img src="/temp/no_vehicles.png" width="300"><img src="/temp/main.png" width="300"><img src="/temp/no_stops.png" width="300">
+
 ## Description
 
 This is an BKK API based, single activity application showing the closest stops with the soonest departing vehicles using the device current location at Budapest, Hungary.
@@ -15,6 +17,7 @@ Feel free to install Holabusz.apk in the root folder on any Android devices.
 * The application has access to device's current location
 * The user is able to define the desired maximum distance of the stops using he/she 's searching for with a seekbar
 * Minimal design with BKK colors
+* Handle Orientation changes
 
 ## Future Features
 
@@ -22,7 +25,6 @@ Feel free to install Holabusz.apk in the root folder on any Android devices.
 * Refresh upon gesture
 * Favorite stops & vehicles and other custom user settings to save into SharedPreferences
 * Flavours to introduce
-* Handle orientation changes
 
 ## Buglist
 
