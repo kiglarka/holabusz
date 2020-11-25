@@ -1,7 +1,6 @@
-package com.codecool.holabusz.main
+    package com.codecool.holabusz.main
 
 import android.graphics.Color
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
