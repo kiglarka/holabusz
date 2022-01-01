@@ -12,7 +12,7 @@ interface RequestApi {
                 "&appVersion=" +
                 "&includeReferences=true" +
                 "&onlyDepartures=true" +
-                "&minutesBefore=1" +
+                "&minutesBefore=0" +
                 "&minutesAfter=30"
     )
 
@@ -27,7 +27,7 @@ interface RequestApi {
     @GET("stops-for-location.json?" +
             "&version=3" +
             "&appVersion=" +
-            "&includeReferences=" +
+            "&includeReferences=true" +
             "&lonSpan=&latSpan=" +
             "&query="
     )
